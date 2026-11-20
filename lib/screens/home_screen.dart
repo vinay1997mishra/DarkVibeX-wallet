@@ -534,7 +534,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isTron = _chain == AppChain.tron;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('USDT Wallet'),
+        title: const Text('DarkVibeX Wallet'),
         actions: [
           if (isTron)
             IconButton(

@@ -1,6 +1,6 @@
-# USDT Wallet App — Flutter Starter
+# DarkVibeX Wallet App — Flutter Starter
 
-Vinay ke liye banaya gaya starter project: **USDT wallet app**, Flutter me.
+Vinay ke liye banaya gaya starter project: **DarkVibeX Wallet app**, Flutter me.
 Teen networks: **Tron (TRC20), Ethereum (ERC20), BNB Smart Chain (BEP20)**.
 Wallet create/import, balance, send, receive, history, transaction status,
 **Swap/Exchange**, **Add Custom Token** aur **New Tokens auto-detect** — sab

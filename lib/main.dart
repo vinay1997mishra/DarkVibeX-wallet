@@ -1,4 +1,4 @@
-// USDT Wallet — starter app for Vinay.
+// DarkVibeX Wallet — starter app for Vinay.
 // USDT (TRC20) on Tron. Default network: Nile testnet (see lib/config.dart).
 
 import 'dart:async';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'USDT Wallet',
+      title: 'DarkVibeX Wallet',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       theme: ThemeData(
@@ -190,7 +190,7 @@ class WelcomeScreen extends StatelessWidget {
                   size: 72, color: Colors.teal),
               const SizedBox(height: 16),
               const Text(
-                'USDT Wallet',
+                'DarkVibeX Wallet',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),

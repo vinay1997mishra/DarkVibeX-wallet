@@ -1,4 +1,4 @@
-# USDT Wallet App — Flutter starter
+# DarkVibeX Wallet — Flutter app
 # USDT (TRC20) on Tron. Default network: Nile TESTNET (see lib/config.dart).
 # Package versions were checked on pub.dev on 2026-11-19.
 name: usdt_wallet_app

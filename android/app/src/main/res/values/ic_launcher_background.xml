@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark purple from the corners of the DarkVibeX Wallet logo (logo 3, panther + coin). -->
+    <color name="ic_launcher_background">#0B0314</color>
+</resources>
