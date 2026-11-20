@@ -1,0 +1,55 @@
+# USDT Wallet App — Flutter starter
+# USDT (TRC20) on Tron. Default network: Nile TESTNET (see lib/config.dart).
+# Package versions were checked on pub.dev on 2026-11-19.
+name: usdt_wallet_app
+description: "USDT (TRC20) crypto wallet starter for learning — Flutter. Default: Tron Nile testnet."
+# Prevent accidental publish to pub.dev
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # 12-word seed phrase (BIP39). Latest: 1.0.6 (checked on pub.dev, 2026-11-19).
+  bip39: ^1.0.6
+
+  # Safe place for the seed phrase + private key on the phone.
+  # Uses Android Keystore / iOS Keychain. Latest: 11.2.0 (checked 2026-11-19).
+  flutter_secure_storage: ^11.2.0
+
+  # Calls to the TronGrid API (balance, history, send).
+  # Latest: 1.6.0 (checked 2026-11-19).
+  http: ^1.6.0
+
+  # secp256k1 signing + Keccak + BIP32 key derivation (Tron keys).
+  # Version is ^3.9.1 (NOT 4.x) on purpose: the `bip39` package pins
+  # pointycastle ^3.0.0, so 4.0.0 cannot resolve together with it.
+  # Latest 3.x is 3.9.1 (checked 2026-11-19).
+  # NOTE: we deliberately do NOT use the `tron_wallet` package — it is stale
+  # (last updated Dec 2024, 135 pub points, unverified uploader, pulls in a
+  # heavy in-app webview). Signing is done here with pointycastle instead.
+  pointycastle: ^3.9.1
+
+  # QR code for the Receive screen. Latest: 4.1.0 (checked 2026-11-19).
+  qr_flutter: ^4.1.0
+
+  # Fingerprint / Face ID for the owner-locked Recovery Wallet screen.
+  # Official flutter.dev package. 2.3.0 is the stable 2.x line
+  # (works with Flutter 3.16+; biometricOnly option included).
+  # If the phone has no biometrics, the app falls back to the owner PIN.
+  local_auth: ^2.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Latest: 6.0.0 (checked 2026-11-19).
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
