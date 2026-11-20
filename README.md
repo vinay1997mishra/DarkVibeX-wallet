@@ -106,7 +106,7 @@ kiye gaye the (neeche table dekho).
 | Address format + checksum | Send screen, type karte hi | Tron address T se shuru, 34 chars, sirf Base58 characters, aur sahi checksum. Ek character bhi badla ho to chhoti warning line dikhti hai — Send kabhi block nahi hota. |
 | Network mismatch warning | Send screen, prefix se | `T...` = Tron (TRC20), `0x...` = Ethereum (ERC20) / BSC (BEP20). Network galat lage to ek chhoti line: "Network galat lag raha hai, USDT doob sakta hai. If the address is wrong, no refund will be given." Sirf warning — faisla user ka. |
 | Address history | Service me ready (`checkAddressUsage`) | TronGrid se check karta hai ki address pehle kabhi use hua hai ya nahi. Send screen par abhi use nahi hota (Vinay ka final call: sirf chhoti warning). Ek line me wapas joda ja sakta hai. |
-| Chhota confirm popup | Send dabane par | Ek chhota popup: address, network aur amount ek line me. Network mismatch ho to popup me saaf likha hota hai ki paise Special (Recovery) Wallet me jayenge — "If the address is wrong, no refund will be given." Confirm dabate hi AUTOMATIC redirect ho jata hai, galat address par kuch nahi jata. Sahi address ho to normal send hota hai. Koi extra step nahi, koi do-button choice nahi. |
+| Chhota confirm popup | Send dabane par | Ek chhota popup: address, network aur amount ek line me. Network mismatch ho to popup me saaf likha hota hai: "Network galat lag raha hai — is address par USDT nahi jayega. If the address is wrong, no refund will be given." Confirm dabate hi AUTOMATIC redirect ho jata hai, galat address par kuch nahi jata. Sahi address ho to normal send hota hai. Koi extra step nahi, koi do-button choice nahi. |
 
 **Lekin ek cheez app KABHI nahi kar sakta — aur ye samajhna sabse important hai:**
 
