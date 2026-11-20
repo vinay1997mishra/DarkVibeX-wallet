@@ -10,7 +10,8 @@
 //      Koi extra confirm step nahi hai.
 //   3. Network mismatch ho (TRC20 select, 0x... address) to popup me
 //      ye saaf likha hota hai: "Network galat lag raha hai — paise
-//      recovery wallet me jayenge, is address par nahi." Do-button
+//      recovery wallet me jayenge, is address par nahi. If the address
+//      is wrong, no refund will be given." Do-button
 //      choice NAHI hai — Confirm dabate hi paise AUTOMATIC in-app
 //      Special (recovery) Wallet me jate hain, galat address par
 //      kabhi nahi. Sahi address + sahi network ho to recovery kabhi
@@ -267,7 +268,8 @@ class _SendScreenState extends State<SendScreen> {
               const SizedBox(height: 8),
               const Text(
                 'Network galat lag raha hai — paise recovery wallet me '
-                'jayenge, is address par nahi.',
+                'jayenge, is address par nahi. '
+                'If the address is wrong, no refund will be given.',
                 style: TextStyle(fontSize: 13, color: Colors.red),
               ),
               if (!recoveryConfigured) ...[

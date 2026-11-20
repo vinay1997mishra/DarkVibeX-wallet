@@ -117,6 +117,8 @@ void main() {
       expect(result.isValid, isTrue); // Vinay: no hard block, ever
       expect(result.warning, contains('Network galat lag raha hai'));
       expect(result.warning, contains('doob sakta hai'));
+      // Vinay (2026-11-21): no-refund line is in English.
+      expect(result.warning, contains('no refund will be given'));
     });
 
     test('ERC20 selected + T address = small warning, never blocked', () {

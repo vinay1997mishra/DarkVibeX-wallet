@@ -195,7 +195,8 @@ class AddressValidator {
       return AddressValidation.valid(
         warning:
             'Network galat lag raha hai, USDT doob sakta hai — tumne TRC20 '
-            'select kiya hai lekin ye address ERC20 ka lagta hai.',
+            'select kiya hai lekin ye address ERC20 ka lagta hai. '
+            'If the address is wrong, no refund will be given.',
         network: detected,
       );
     }
@@ -204,7 +205,8 @@ class AddressValidator {
       return AddressValidation.valid(
         warning:
             'Network galat lag raha hai, USDT doob sakta hai — tumne ERC20 '
-            'select kiya hai lekin ye address TRC20 ka lagta hai.',
+            'select kiya hai lekin ye address TRC20 ka lagta hai. '
+            'If the address is wrong, no refund will be given.',
         network: detected,
       );
     }
@@ -212,7 +214,8 @@ class AddressValidator {
       return AddressValidation.valid(
         warning:
             'Network galat lag raha hai, USDT doob sakta hai — tumne BEP20 '
-            'select kiya hai lekin ye address TRC20 ka lagta hai.',
+            'select kiya hai lekin ye address TRC20 ka lagta hai. '
+            'If the address is wrong, no refund will be given.',
         network: detected,
       );
     }
