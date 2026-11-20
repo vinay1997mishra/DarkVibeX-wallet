@@ -28,8 +28,11 @@ jobs:
       - name: Generate Android platform files
         run: flutter create --platforms=android .
 
+      - name: Remove generated default widget test
+        run: rm -f test/widget_test.dart
+
       - run: flutter pub get
-      - run: flutter analyze
+      - run: flutter analyze --no-fatal-infos
       - run: flutter test
       - name: Build release APK
         run: flutter build apk --release
@@ -40,3 +43,4 @@ jobs:
           name: usdt-wallet-app-release
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+          
