@@ -73,12 +73,12 @@ class _AddCustomTokenScreenState extends State<AddCustomTokenScreen> {
     if (added) {
       Navigator.of(context).pop(true);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${found.symbol} add ho gaya!')),
+        SnackBar(content: Text('${found.symbol} added!')),
       );
     } else {
       setState(() {
         _adding = false;
-        _error = 'Ye token pehle se add hai.';
+        _error = 'This token has already been added.';
       });
     }
   }
@@ -100,8 +100,8 @@ class _AddCustomTokenScreenState extends State<AddCustomTokenScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'TRC20 token ka contract address dalo. App khud uska naam, '
-              'symbol aur balance fetch karke dikhayega.',
+              'Enter the contract address of a TRC20 token. The app will fetch and show '
+              'its name, symbol and balance.',
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -109,7 +109,7 @@ class _AddCustomTokenScreenState extends State<AddCustomTokenScreen> {
               controller: _contractController,
               decoration: const InputDecoration(
                 labelText: 'Contract address',
-                hintText: 'T... se shuru hone wala address',
+                hintText: 'Address starting with T...',
                 border: OutlineInputBorder(),
               ),
               onChanged: (_) => setState(() {
@@ -132,7 +132,7 @@ class _AddCustomTokenScreenState extends State<AddCustomTokenScreen> {
                       child: CircularProgressIndicator(
                           color: Colors.white, strokeWidth: 2),
                     )
-                  : const Text('Token dhoondho'),
+                  : const Text('Find token'),
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
@@ -155,12 +155,12 @@ class _AddCustomTokenScreenState extends State<AddCustomTokenScreen> {
                     Text(found.name),
                     Text('Decimals: ${found.decimals}'),
                     Text(
-                      'Tumhara balance: ${_balance?.toStringAsFixed(4) ?? '...'} ${found.symbol}',
+                      'Your balance: ${_balance?.toStringAsFixed(4) ?? '...'} ${found.symbol}',
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Contract address ko Tronscan par verify kar lo — '
-                      'scam token ka naam/symbol asli jaisa ho sakta hai.',
+                      'Verify the contract address on Tronscan — '
+                      "a scam token's name/symbol can look like the real one.",
                       style: TextStyle(fontSize: 12, color: Colors.orange),
                     ),
                   ],
@@ -174,7 +174,7 @@ class _AddCustomTokenScreenState extends State<AddCustomTokenScreen> {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Add karo',
+                child: const Text('Add',
                     style: TextStyle(fontSize: 16)),
               ),
             ],

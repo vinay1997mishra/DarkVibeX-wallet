@@ -12,7 +12,7 @@ class ReceiveScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('USDT receive karo')),
+      appBar: AppBar(title: const Text('Receive USDT')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -44,11 +44,11 @@ class ReceiveScreen extends StatelessWidget {
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: address));
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Address copy ho gaya')),
+                  const SnackBar(content: Text('Address copied')),
                 );
               },
               icon: const Icon(Icons.copy),
-              label: const Text('Address copy karo'),
+              label: const Text('Copy address'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
                 foregroundColor: Colors.white,
@@ -63,9 +63,9 @@ class ReceiveScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Text(
-                'Sirf USDT (TRC20) is address par bhejo. Koi aur coin '
-                '(jaise Bitcoin ya Ethereum USDT) bhejoge to paise hamesha '
-                'ke liye kho jayenge.',
+                'Send only USDT (TRC20) to this address. If you send any other coin '
+                '(like Bitcoin or Ethereum USDT), your money will be lost '
+                'forever.',
                 style: TextStyle(color: Colors.orange),
               ),
             ),

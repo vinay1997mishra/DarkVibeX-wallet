@@ -60,7 +60,7 @@ class SwapService {
     final res = await http.get(uri);
     if (res.statusCode != 200) {
       throw Exception(
-        'Rate nahi mil paya (CoinGecko HTTP ${res.statusCode}). Internet check karo, thodi der baad dobara try karo.',
+        'Could not fetch the rate (CoinGecko HTTP ${res.statusCode}). Check your internet and try again in a little while.',
       );
     }
     return parseUsdPrices(res.body);
@@ -89,7 +89,7 @@ class SwapService {
     final fromUsd = prices[from.coinGeckoId];
     final toUsd = prices[to.coinGeckoId];
     if (fromUsd == null || toUsd == null || toUsd == 0) {
-      throw Exception('Is pair ka rate nahi mila (CoinGecko).');
+      throw Exception('Rate not found for this pair (CoinGecko).');
     }
     return fromUsd / toUsd;
   }
@@ -106,9 +106,9 @@ class SwapService {
     required TokenInfo to,
     required double amountIn,
   }) async {
-    if (amountIn <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (amountIn <= 0) throw Exception('The amount must be more than 0.');
     if (from.symbol == to.symbol) {
-      throw Exception('Dono taraf ek hi coin hai — swap ka matlab nahi.');
+      throw Exception('Both sides have the same coin — there is no point in swapping.');
     }
 
     final isTronPair = from.isTronToken && to.isTronToken;
@@ -158,7 +158,7 @@ class SwapService {
       to: to,
       amountIn: amountIn,
       rate: rate,
-      rateSource: 'CoinGecko (estimate — pool quote nahi mila)',
+      rateSource: 'CoinGecko (estimate — pool quote not available)',
       feePercent: fee,
       slippagePercent: slippage,
       mode: SwapMode.liveTron,
@@ -181,7 +181,7 @@ class SwapService {
       parameter,
     );
     final amounts = CustomTokenService.decodeAbiUintArray(hex);
-    if (amounts.length < 2) throw Exception('Pool quote nahi mila.');
+    if (amounts.length < 2) throw Exception('Pool quote not available.');
     final outSmallest = amounts.last;
     return _fromSmallest(outSmallest, to.decimals);
   }
@@ -200,7 +200,7 @@ class SwapService {
   }) async {
     if (!quote.isExecutable) {
       throw Exception(
-        'Ye swap execute nahi ho sakta — ${quote.quoteOnlyReason ?? 'sirf rate quote hai'}.',
+        'This swap cannot be executed — ${quote.quoteOnlyReason ?? 'rate quote only'}.',
       );
     }
     final from = quote.from;
@@ -260,7 +260,7 @@ class SwapService {
       );
     } else {
       throw Exception(
-        'Is pair ka on-chain swap is starter me nahi hai (sirf USDT <-> TRX).',
+        'On-chain swap for this pair is not in this starter (only USDT <-> TRX).',
       );
     }
 
@@ -290,13 +290,13 @@ class SwapService {
       return (
         collected: false,
         destination: null,
-        note: 'Fee wallet set nahi hai — fee collect nahi hui, fee ka hissa '
-            'tumhare wallet me hi raha. Fee pane ke liye config me apna '
-            'TRC20 address dalo.',
+        note: 'The fee wallet is not set — the fee was not collected, and the fee amount '
+            'stayed in your wallet. To receive the fee, add your '
+            'TRC20 address in the config.',
       );
     }
     if (quote.serviceFee <= 0) {
-      return (collected: false, destination: null, note: 'Fee 0 hai.');
+      return (collected: false, destination: null, note: 'The fee is 0.');
     }
     try {
       if (quote.from.symbol == 'USDT') {
@@ -317,8 +317,8 @@ class SwapService {
       return (
         collected: false,
         destination: null,
-        note: 'Fee transfer fail ho gaya ($e) — swap ho gaya hai, fee '
-            'tumhare wallet me hi reh gayi.',
+        note: 'Fee transfer failed ($e) — the swap is done, and the fee '
+            'stayed in your wallet.',
       );
     }
   }
@@ -330,7 +330,7 @@ class SwapService {
       final status = await _api.getTransactionStatus(txId);
       if (status == TxStatus.confirmed) return;
       if (status == TxStatus.failed) {
-        throw Exception('Transaction fail ho gayi (tx: $txId).');
+        throw Exception('The transaction failed (tx: $txId).');
       }
     }
     // Timeout: transaction abhi bhi Pending ho sakti hai — caller
@@ -397,12 +397,12 @@ class SwapService {
       }),
     );
     if (res.statusCode != 200) {
-      throw Exception('Quote nahi mil paya (HTTP ${res.statusCode}).');
+      throw Exception('Could not fetch the quote (HTTP ${res.statusCode}).');
     }
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     final result = json['result'];
     if (result is Map && result['result'] != true) {
-      throw Exception('Pool quote fail: ${json['Error'] ?? 'unknown'}.');
+      throw Exception('Pool quote failed: ${json['Error'] ?? 'unknown'}.');
     }
     final constantResult = json['constant_result'];
     if (constantResult is! List || constantResult.isEmpty) return '';

@@ -60,9 +60,9 @@ class _SeedBackupAgreementCardState extends State<SeedBackupAgreementCard> {
             ),
           ),
           title: const Text(
-            'Main is agreement se sehmat hoon: wallet banega hi seed se, '
-            'without Gmail and any other proofs. Apne 12 words ki zimmedari '
-            'meri hai — words kho gaye to paise wapas nahi milenge.',
+            'I agree to this agreement: the wallet will be created from the seed only, '
+            'without Gmail and any other proofs. I am responsible for my 12 words — '
+            'if the words are lost, the funds cannot be recovered.',
           ),
           controlAffinity: ListTileControlAffinity.leading,
           contentPadding: EdgeInsets.zero,
@@ -80,7 +80,7 @@ class _SeedBackupAgreementCardState extends State<SeedBackupAgreementCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Seed backup note — alag se, khul kar padho:',
+                  'Seed backup note — read it separately and carefully:',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -105,11 +105,11 @@ class _SeedBackupAgreementCardState extends State<SeedBackupAgreementCard> {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Seed backup PERMANENT save rehti hai, sirf tumhari marzi '
-                  'se. Backup sirf OWNER dekh sakta hai — dusre users nahi '
-                  'dekh sakte. Seed server par encrypted save hoti hai, '
-                  'plain text me kabhi nahi. Tum backup delete bhi kar '
-                  'sakte ho.',
+                  'The seed backup stays saved PERMANENTLY, only by your choice. '
+                  'Only the OWNER can view the backup — other users cannot '
+                  'see it. The seed is saved encrypted on the server, '
+                  'never in plain text. You can also delete the '
+                  'backup.',
                   style: TextStyle(fontSize: 14),
                 ),
               ],
@@ -121,8 +121,8 @@ class _SeedBackupAgreementCardState extends State<SeedBackupAgreementCard> {
             onChanged: (v) =>
                 _update(choice.copyWith(agreedBackup: v ?? false)),
             title: const Text(
-              'Maine seed-backup note padh liya hai aur main sehmat hoon: '
-              'meri seed backup server par PERMANENT save rahegi.',
+              'I have read the seed-backup note and I agree: '
+              'my seed backup will stay saved PERMANENTLY on the server.',
             ),
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
@@ -140,14 +140,14 @@ class _SeedBackupAgreementCardState extends State<SeedBackupAgreementCard> {
                   ),
           child: Text(
             choice.skipped
-                ? 'Skip kiya — seed backup save NAHI hogi'
-                : 'Skip karo — bina seed backup ke aage badho',
+                ? 'Skipped — seed backup will NOT be saved'
+                : 'Skip — continue without a seed backup',
           ),
         ),
         if (choice.skipped)
           TextButton(
             onPressed: () => _update(const SeedBackupChoice()),
-            child: const Text('Skip wapas lo — dobara choose karo'),
+            child: const Text('Undo skip — choose again'),
           ),
       ],
     );

@@ -71,11 +71,11 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
     final pin = _pinController.text.trim();
     final confirm = _pinConfirmController.text.trim();
     if (!OwnerLockService.isValidPin(pin)) {
-      setState(() => _error = 'PIN 4-6 digit ka hona chahiye.');
+      setState(() => _error = 'PIN must be 4-6 digits.');
       return;
     }
     if (pin != confirm) {
-      setState(() => _error = 'Dono PIN same hone chahiye.');
+      setState(() => _error = 'Both PINs must match.');
       return;
     }
     try {
@@ -102,7 +102,7 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
     if (ok) {
       _openOwnerAccounts();
     } else {
-      setState(() => _error = 'Galat PIN. Dobara try karo.');
+      setState(() => _error = 'Wrong PIN. Try again.');
     }
   }
 
@@ -110,14 +110,14 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
     if (_busy) return;
     setState(() => _busy = true);
     final ok = await _lock.authenticateWithBiometric(
-      reason: 'Owner login ke liye verify karo',
+      reason: 'Verify for owner login',
     );
     if (!mounted) return;
     setState(() => _busy = false);
     if (ok) {
       _openOwnerAccounts();
     } else {
-      setState(() => _error = 'Biometric fail hua — PIN se login karo.');
+      setState(() => _error = 'Biometric failed — log in with PIN.');
     }
   }
 
@@ -145,10 +145,10 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
                   const SizedBox(height: 16),
                   Text(
                     hasPin
-                        ? 'Owner login ke liye PIN dalo ya biometric se verify karo.'
-                        : 'Pehli baar owner login — owner PIN set karo. '
-                            'Yehi PIN aage se owner area kholne ke liye '
-                            'chahiye hoga.',
+                        ? 'Enter your PIN or verify with biometric to log in as owner.'
+                        : 'First owner login — set an owner PIN. '
+                            'You will need this same PIN to open the owner area '
+                            'from now on.',
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 15),
                   ),
@@ -163,7 +163,7 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
                       ],
                       maxLength: 6,
                       decoration: const InputDecoration(
-                        labelText: 'Owner PIN (4-6 digit)',
+                        labelText: 'Owner PIN (4-6 digits)',
                         border: OutlineInputBorder(),
                         counterText: '',
                       ),
@@ -178,7 +178,7 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
                       ],
                       maxLength: 6,
                       decoration: const InputDecoration(
-                        labelText: 'PIN dobara likho',
+                        labelText: 'Enter PIN again',
                         border: OutlineInputBorder(),
                         counterText: '',
                       ),
@@ -193,7 +193,7 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
                       ],
                       maxLength: 6,
                       decoration: const InputDecoration(
-                        labelText: 'Owner PIN (4-6 digit)',
+                        labelText: 'Owner PIN (4-6 digits)',
                         border: OutlineInputBorder(),
                         counterText: '',
                       ),
@@ -217,7 +217,7 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     child: Text(
-                      hasPin ? 'Login karo' : 'PIN set karo',
+                      hasPin ? 'Log in' : 'Set PIN',
                       style: const TextStyle(fontSize: 18),
                     ),
                   ),
@@ -228,7 +228,7 @@ class _OwnerLoginScreenState extends State<OwnerLoginScreen> {
                     OutlinedButton.icon(
                       onPressed: _busy ? null : _unlockWithBiometric,
                       icon: const Icon(Icons.fingerprint),
-                      label: const Text('Fingerprint / Face ID se login karo'),
+                      label: const Text('Log in with Fingerprint / Face ID'),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),

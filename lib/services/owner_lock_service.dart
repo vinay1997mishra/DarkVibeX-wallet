@@ -90,7 +90,7 @@ class OwnerLockService {
   /// The plain PIN is never stored — only hash + salt.
   Future<void> setPin(String pin) async {
     if (!isValidPin(pin)) {
-      throw Exception('PIN 4-6 digit ka hona chahiye.');
+      throw Exception('The PIN must be 4-6 digits.');
     }
     final salt = generateSalt();
     await _store.write(key: pinSaltKey, value: salt);
@@ -168,7 +168,7 @@ class OwnerLockService {
   Future<bool> setBiometricEnabled(bool enabled) async {
     if (enabled) {
       if (!await authenticateWithBiometric(
-        reason: 'Biometric unlock on karne ke liye verify karo',
+        reason: 'Verify to turn on biometric unlock',
       )) {
         return false;
       }
@@ -184,7 +184,7 @@ class OwnerLockService {
   /// cancellation or missing hardware returns false — never throws,
   /// so the UI can always fall back to the PIN.
   Future<bool> authenticateWithBiometric({
-    String reason = 'Recovery Wallet kholne ke liye verify karo',
+    String reason = 'Verify to open the Recovery Wallet',
   }) async {
     try {
       return await _auth.authenticate(

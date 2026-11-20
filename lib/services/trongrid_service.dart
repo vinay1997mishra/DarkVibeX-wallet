@@ -63,7 +63,7 @@ class TronGridService {
     final json = await _post('/wallet/triggerconstantcontract', body);
     final result = json['result'];
     if (result is Map && result['result'] != true) {
-      throw Exception('Balance nahi mil paya: ${json['Error'] ?? 'unknown'}');
+      throw Exception('Could not fetch the balance: ${json['Error'] ?? 'unknown'}');
     }
     final constantResult = json['constant_result'];
     if (constantResult is! List || constantResult.isEmpty) return 0;
@@ -102,7 +102,7 @@ class TronGridService {
     );
     final res = await http.get(uri, headers: _headers);
     if (res.statusCode != 200) {
-      throw Exception('History nahi mil payi (HTTP ${res.statusCode}).');
+      throw Exception('Could not fetch the history (HTTP ${res.statusCode}).');
     }
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     final data = json['data'];
@@ -232,9 +232,9 @@ class TronGridService {
     String? privateKeyHex,
   }) async {
     if (!WalletService.isValidTronAddress(toAddress)) {
-      throw Exception('Receiver ka address galat hai. T se shuru hona chahiye.');
+      throw Exception('The receiver address is wrong. It must start with T.');
     }
-    if (amountUsdt <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (amountUsdt <= 0) throw Exception('The amount must be more than 0.');
 
     // 1 USDT = 1,000,000 smallest units.
     final amountSmallest =
@@ -258,16 +258,16 @@ class TronGridService {
     final buildResult = buildJson['result'];
     if (buildResult is Map && buildResult['result'] != true) {
       throw Exception(
-        'Transfer ban nahi paya: ${buildJson['Error'] ?? buildResult['message'] ?? 'unknown error'}. '
-        'Ho sakta hai TRX kam ho (fee ke liye TRX chahiye) ya address galat ho.',
+        'Could not create the transfer: ${buildJson['Error'] ?? buildResult['message'] ?? 'unknown error'}. '
+        'You may have too little TRX (TRX is needed for the fee) or the address may be wrong.',
       );
     }
     final transaction = buildJson['transaction'];
     if (transaction is! Map<String, dynamic>) {
-      throw Exception('Transfer ban nahi paya: TronGrid se jawab nahi mila.');
+      throw Exception('Could not create the transfer: no response from TronGrid.');
     }
     final txId = transaction['txID']?.toString() ?? '';
-    if (txId.isEmpty) throw Exception('Transfer ban nahi paya: txID nahi mila.');
+    if (txId.isEmpty) throw Exception('Could not create the transfer: no txID received.');
 
     // Step 2: sign locally. The private key never leaves the phone.
     final signingKeyHex =
@@ -282,7 +282,7 @@ class TronGridService {
     );
     if (broadcastJson['result'] != true) {
       throw Exception(
-        'Broadcast fail ho gaya: ${broadcastJson['code'] ?? ''} ${broadcastJson['message'] ?? 'unknown error'}',
+        'Broadcast failed: ${broadcastJson['code'] ?? ''} ${broadcastJson['message'] ?? 'unknown error'}',
       );
     }
     return broadcastJson['txid']?.toString() ?? txId;
@@ -301,9 +301,9 @@ class TronGridService {
     String? privateKeyHex,
   }) async {
     if (!WalletService.isValidTronAddress(toAddress)) {
-      throw Exception('Receiver ka address galat hai. T se shuru hona chahiye.');
+      throw Exception('The receiver address is wrong. It must start with T.');
     }
-    if (amountTrx <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (amountTrx <= 0) throw Exception('The amount must be more than 0.');
     final amountSun = BigInt.from((amountTrx * 1000000).round());
     final buildJson = await _post('/wallet/createtransaction', {
       'owner_address': fromAddress,
@@ -313,7 +313,7 @@ class TronGridService {
     });
     final txId = buildJson['txID']?.toString() ?? '';
     if (txId.isEmpty) {
-      throw Exception('TRX transfer ban nahi paya: ${buildJson['Error'] ?? 'unknown'}.');
+      throw Exception('Could not create the TRX transfer: ${buildJson['Error'] ?? 'unknown'}.');
     }
     final signingKeyHex =
         privateKeyHex ?? await _walletService.getPrivateKeyHex();
@@ -323,7 +323,7 @@ class TronGridService {
     final broadcastJson = await _post('/wallet/broadcasttransaction', tx);
     if (broadcastJson['result'] != true) {
       throw Exception(
-        'Broadcast fail: ${broadcastJson['code'] ?? ''} ${broadcastJson['message'] ?? 'unknown error'}',
+        'Broadcast failed: ${broadcastJson['code'] ?? ''} ${broadcastJson['message'] ?? 'unknown error'}',
       );
     }
     return broadcastJson['txid']?.toString() ?? txId;
@@ -353,16 +353,16 @@ class TronGridService {
     final buildResult = buildJson['result'];
     if (buildResult is Map && buildResult['result'] != true) {
       throw Exception(
-        'Contract call ban nahi paya: ${buildJson['Error'] ?? buildResult['message'] ?? 'unknown error'}. '
-        'Ho sakta hai TRX kam ho ya pool me liquidity na ho.',
+        'Could not create the contract call: ${buildJson['Error'] ?? buildResult['message'] ?? 'unknown error'}. '
+        'You may have too little TRX or there may be no liquidity in the pool.',
       );
     }
     final transaction = buildJson['transaction'];
     if (transaction is! Map<String, dynamic>) {
-      throw Exception('Contract call ban nahi paya: TronGrid se jawab nahi mila.');
+      throw Exception('Could not create the contract call: no response from TronGrid.');
     }
     final txId = transaction['txID']?.toString() ?? '';
-    if (txId.isEmpty) throw Exception('Contract call ban nahi paya: txID nahi mila.');
+    if (txId.isEmpty) throw Exception('Could not create the contract call: no txID received.');
     final signingKeyHex =
         privateKeyHex ?? await _walletService.getPrivateKeyHex();
     final signatureHex = WalletService.signHash(txId, signingKeyHex);
@@ -373,7 +373,7 @@ class TronGridService {
     );
     if (broadcastJson['result'] != true) {
       throw Exception(
-        'Broadcast fail ho gaya: ${broadcastJson['code'] ?? ''} ${broadcastJson['message'] ?? 'unknown error'}',
+        'Broadcast failed: ${broadcastJson['code'] ?? ''} ${broadcastJson['message'] ?? 'unknown error'}',
       );
     }
     return broadcastJson['txid']?.toString() ?? txId;
@@ -398,7 +398,7 @@ class TronGridService {
     }
     final decoded = jsonDecode(res.body);
     if (decoded is! Map<String, dynamic>) {
-      throw Exception('TronGrid se galat jawab mila.');
+      throw Exception('Received a wrong response from TronGrid.');
     }
     return decoded;
   }

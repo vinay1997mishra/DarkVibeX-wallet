@@ -196,7 +196,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                'USDT (TRC20) bhejo aur receive karo.\nPehle testnet par seekho, phir real money.',
+                'Send and receive USDT (TRC20).\nLearn on testnet first, then use real money.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 15, color: Colors.grey),
               ),
@@ -208,7 +208,7 @@ class WelcomeScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Naya wallet banao',
+                child: const Text('Create a new wallet',
                     style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 12),
@@ -217,7 +217,7 @@ class WelcomeScreen extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('Purana wallet import karo',
+                child: const Text('Import an existing wallet',
                     style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 40),

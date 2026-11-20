@@ -178,7 +178,7 @@ const List<TokenInfo> curatedTokens = [
     network: 'Ethereum (ERC20) — swap quote only',
     quoteOnly: true,
     quoteOnlyReason:
-        'USDT ERC20 ka balance/send Ethereum network par chalta hai. Swap (Uniswap) is starter me nahi hai — abhi sirf rate dikhta hai, wo next step hai.',
+        'USDT ERC20 balance/send works on the Ethereum network. Swap (Uniswap) is not in this starter — only the rate is shown for now, that is the next step.',
   ),
   TokenInfo(
     id: 'BNB',
@@ -190,7 +190,7 @@ const List<TokenInfo> curatedTokens = [
     network: 'BNB Smart Chain (native) — swap quote only',
     quoteOnly: true,
     quoteOnlyReason:
-        'BNB ka balance/send BNB Smart Chain par chalta hai. Swap (PancakeSwap) is starter me nahi hai — abhi sirf rate dikhta hai, wo next step hai.',
+        'BNB balance/send works on the BNB Smart Chain. Swap (PancakeSwap) is not in this starter — only the rate is shown for now, that is the next step.',
   ),
   TokenInfo(
     id: 'USDT-BEP20',
@@ -202,7 +202,7 @@ const List<TokenInfo> curatedTokens = [
     network: 'BNB Smart Chain (BEP20) — swap quote only',
     quoteOnly: true,
     quoteOnlyReason:
-        'USDT BEP20 ka balance/send BNB Smart Chain par chalta hai. Swap (PancakeSwap) is starter me nahi hai — abhi sirf rate dikhta hai, wo next step hai.',
+        'USDT BEP20 balance/send works on the BNB Smart Chain. Swap (PancakeSwap) is not in this starter — only the rate is shown for now, that is the next step.',
   ),
   TokenInfo(
     id: 'ETH',
@@ -213,7 +213,7 @@ const List<TokenInfo> curatedTokens = [
     network: 'Ethereum (native) — swap quote only',
     quoteOnly: true,
     quoteOnlyReason:
-        'ETH ka balance/send Ethereum network par chalta hai. Swap (Uniswap) is starter me nahi hai — abhi sirf rate dikhta hai, wo next step hai.',
+        'ETH balance/send works on the Ethereum network. Swap (Uniswap) is not in this starter — only the rate is shown for now, that is the next step.',
   ),
   TokenInfo(
     id: 'SHIB',
@@ -224,7 +224,7 @@ const List<TokenInfo> curatedTokens = [
     network: 'Ethereum (ERC20) — swap quote only',
     quoteOnly: true,
     quoteOnlyReason:
-        'SHIB ka balance/send Ethereum network par chalta hai. Swap (Uniswap) is starter me nahi hai — abhi sirf rate dikhta hai, wo next step hai.',
+        'SHIB balance/send works on the Ethereum network. Swap (Uniswap) is not in this starter — only the rate is shown for now, that is the next step.',
   ),
   TokenInfo(
     id: 'BTC',
@@ -235,7 +235,7 @@ const List<TokenInfo> curatedTokens = [
     network: 'Bitcoin — quote only',
     quoteOnly: true,
     quoteOnlyReason:
-        'BTC dusri chain (Bitcoin) ka coin hai — is starter me sirf rate dikhta hai, swap execute nahi hota. Cross-chain swap ke liye bridge/exchange chahiye.',
+        'BTC is a coin of another chain (Bitcoin) — only the rate is shown in this starter, swap is not executed. A bridge/exchange is needed for a cross-chain swap.',
   ),
 ];
 
@@ -334,7 +334,7 @@ class CustomTokenService {
     final contract = contractAddress.trim();
     if (!WalletService.isValidTronAddress(contract)) {
       throw Exception(
-        'Ye sahi TRC20 contract address nahi lagta (T se shuru, 34 chars).',
+        'This does not look like a valid TRC20 contract address (starts with T, 34 characters).',
       );
     }
     final name = await _callString(contract, 'name()');
@@ -342,7 +342,7 @@ class CustomTokenService {
     final decimals = await _callUint(contract, 'decimals()');
     if (symbol.isEmpty) {
       throw Exception(
-        'Is contract se symbol nahi mila — ho sakta hai ye TRC20 token hi na ho.',
+        'No symbol was found for this contract — it may not be a TRC20 token at all.',
       );
     }
     return TokenInfo(
@@ -415,13 +415,13 @@ class CustomTokenService {
       }),
     );
     if (res.statusCode != 200) {
-      throw Exception('Token details nahi mil paye (HTTP ${res.statusCode}).');
+      throw Exception('Token details could not be fetched (HTTP ${res.statusCode}).');
     }
     final json = jsonDecode(res.body) as Map<String, dynamic>;
     final result = json['result'];
     if (result is Map && result['result'] != true) {
       throw Exception(
-        'Contract call fail: ${json['Error'] ?? 'ye TRC20 token nahi lagta'}.',
+        'Contract call failed: ${json['Error'] ?? 'this does not look like a TRC20 token'}.',
       );
     }
     final constantResult = json['constant_result'];

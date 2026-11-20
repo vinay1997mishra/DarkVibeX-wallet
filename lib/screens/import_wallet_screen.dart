@@ -53,20 +53,20 @@ class _ImportWalletScreenState extends State<ImportWalletScreen> {
       final ok = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Seed backup save nahi hui'),
+          title: const Text('Seed backup was not saved'),
           content: Text(
             backupStatus == SeedBackupStatus.notConfigured
-                ? 'Seed backup server abhi set nahi hai, isliye backup '
-                    'server par save NAHI hui. Wallet import ho gaya hai — '
-                    'apne 12 words kagaz par likh kar safe jagah rakho.'
-                : 'Seed backup upload nahi hui (server/network problem). '
-                    'Wallet import ho gaya hai — apne 12 words kagaz par '
-                    'likh kar safe jagah rakho.',
+                ? 'The seed backup server is not set up yet, so the backup '
+                    'was NOT saved on the server. Your wallet has been imported — '
+                    'write down your 12 words on paper and keep them in a safe place.'
+                : 'The seed backup could not be uploaded (server/network problem). '
+                    'Your wallet has been imported — write down your 12 words on paper '
+                    'and keep them in a safe place.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Samajh gaya'),
+              child: const Text('I understand'),
             ),
           ],
         ),
@@ -85,15 +85,15 @@ class _ImportWalletScreenState extends State<ImportWalletScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Wallet import karo')),
+      appBar: AppBar(title: const Text('Import wallet')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Apne purane wallet ke 12 words yahan likho. Words sahi '
-              'honge to wahi address aur wahi balance wapas milega.',
+              'Enter the 12 words of your old wallet here. If the words are correct, '
+              'you will get back the same address and the same balance.',
               style: TextStyle(fontSize: 15),
             ),
             const SizedBox(height: 20),
@@ -131,7 +131,7 @@ class _ImportWalletScreenState extends State<ImportWalletScreen> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text('Import karo', style: TextStyle(fontSize: 18)),
+                  : const Text('Import', style: TextStyle(fontSize: 18)),
             ),
           ],
         ),

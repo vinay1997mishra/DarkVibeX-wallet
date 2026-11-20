@@ -338,8 +338,8 @@ class _HomeScreenState extends State<HomeScreen> {
       SnackBar(
         content: Text(
           confirmed
-              ? 'Transaction confirm ho gayi! Balance update ho gaya.'
-              : 'Transaction fail ho gayi. Paise nahi gaye (sirf thodi fee gayi).',
+              ? 'Transaction confirmed! Balance updated.'
+              : 'Transaction failed. No money was sent (only a small fee was charged).',
         ),
         backgroundColor: confirmed ? Colors.green : Colors.red,
       ),
@@ -378,9 +378,9 @@ class _HomeScreenState extends State<HomeScreen> {
         SnackBar(
           content: Text(
             result.isRecoveryRedirect
-                ? 'Recovery wallet me bhej diya! Status: Pending — '
-                    'original address history me likha hai.'
-                : 'Bhej diya! Status: Pending — confirm hote hi balance apne aap update hoga.',
+                ? 'Sent to the recovery wallet! Status: Pending — '
+                    'The original address is recorded in history.'
+                : 'Sent! Status: Pending — your balance will update automatically once it is confirmed.',
           ),
         ),
       );
@@ -402,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (result == null || !mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bhej diya! Tx: ${result.txHash}'),
+          content: Text('Sent! Tx: ${result.txHash}'),
         ),
       );
       await _refreshForChain();
@@ -456,16 +456,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final yes = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Wallet delete karo?'),
+        title: const Text('Delete wallet?'),
         content: const Text(
-          'Ye wallet is phone se delete ho jayega. Paise blockchain par '
-          'rahenge — 12 words se wapas la sakte ho. Bina 12 words ke paise '
-          'hamesha ke liye kho jayenge.\n\n'
-          'Real user ko seed owner se sirf 3 months ke andar milegi, AFTER '
-          'wallet logout (logout day se 3 months, wallet creation day se '
-          'nahi); uske baad owner kisi ko seed nahi dega, seed server par '
-          'saved rehne ke baad bhi.\n\n'
-          'Aage badho?',
+          'This wallet will be deleted from this phone. Your money stays '
+          'on the blockchain — you can restore it with your 12 words. '
+          'Without the 12 words, your money will be lost forever.\n\n'
+          'The real user can get the seed from the owner only within '
+          '3 months AFTER wallet logout (3 months from the logout day, '
+          'not from the wallet creation day); after that the owner will '
+          'not give the seed to anyone, even if the seed is still saved '
+          'on the server.\n\n'
+          'Continue?',
         ),
         actions: [
           TextButton(
@@ -474,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete karo', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -538,7 +539,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (isTron)
             IconButton(
               icon: const Icon(Icons.history),
-              tooltip: 'Saari history',
+              tooltip: 'All history',
               onPressed: _address == null
                   ? null
                   : () {
@@ -556,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (_) => const [
               PopupMenuItem(
                 value: 'delete',
-                child: Text('Wallet delete karo',
+                child: Text('Delete wallet',
                     style: TextStyle(color: Colors.red)),
               ),
             ],
@@ -607,8 +608,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (!isTron) ...[
                     const SizedBox(height: 8),
                     const Text(
-                      'ETH aur BNB ka address ek hi hota hai (0x..., ek hi seed se). '
-                      'Balance aur history har chain par alag hota hai.',
+                      'ETH and BNB share the same address (0x..., from the same seed). '
+                      'Balance and history are different on each chain.',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -645,7 +646,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ElevatedButton.icon(
                           onPressed: _openSend,
                           icon: const Icon(Icons.arrow_upward),
-                          label: const Text('Bhejo'),
+                          label: const Text('Send'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal,
                             foregroundColor: Colors.white,
@@ -717,8 +718,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Padding(
                       padding: EdgeInsets.only(top: 4),
                       child: Text(
-                        'Add Custom Token abhi Tron (TRC20) ke liye hai — '
-                        'EVM custom token jald aa raha hai.',
+                        'Add Custom Token is available for Tron (TRC20) for now — '
+                        'EVM custom tokens are coming soon.',
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
@@ -733,8 +734,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
                     const Text(
-                      'Ye tokens tumhare address par mile — curated list me ho ya na ho. '
-                      'Swap list me ye automatic nahi aate (scam risk).',
+                      'These tokens were found at your address — whether or not they are in the curated list. '
+                      'They do not appear in the swap list automatically (scam risk).',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
@@ -762,7 +763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // ---- Custom tokens (user ne khud add kiye) ----
                   if (isTron && _customTokens.isNotEmpty) ...[
                     const Text(
-                      'Tumhare custom tokens',
+                      'Your custom tokens',
                       style:
                           TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                     ),
@@ -798,7 +799,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text(
-                          'Abhi koi transaction nahi hai.',
+                          'No transactions yet.',
                           style: TextStyle(color: Colors.grey),
                         ),
                       )
@@ -820,7 +821,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Text(
-                          'Abhi koi transaction nahi hai.',
+                          'No transactions yet.',
                           style: TextStyle(color: Colors.grey),
                         ),
                       )
@@ -885,20 +886,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Har mahine 0.01 USDT fee lagegi — balance kuch bhi ho, '
-            'fee wahi rahegi.',
+            'A fee of 0.01 USDT will be charged every month — whatever your balance is, '
+            'the fee stays the same.',
             style: TextStyle(fontSize: 13),
           ),
           const SizedBox(height: 4),
           Text(
-            'Agli fee: $due (mahine ke aakhri din) • Fee USDT me, '
-            'owner wallet ko jayegi.',
+            'Next fee: $due (last day of the month) • The fee is in USDT and '
+            'goes to the owner wallet.',
             style: const TextStyle(fontSize: 13),
           ),
           const SizedBox(height: 4),
           const Text(
-            'Note: app khud balance se fee nahi kaat-ta — deduction ke '
-            'liye server chahiye, jo abhi nahi hai.',
+            'Note: the app does not deduct the fee from your balance itself — '
+            'a server is needed for the deduction, which is not available yet.',
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
@@ -923,7 +924,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
           ),
           Text(
-            'TRX: ${_trxBalance.toStringAsFixed(2)} (fee ke liye)',
+            'TRX: ${_trxBalance.toStringAsFixed(2)} (for fees)',
             style: const TextStyle(color: Colors.grey),
           ),
           const SizedBox(height: 8),
@@ -961,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (isTestnet) ...[
             const SizedBox(height: 8),
             Text(
-              'Testnet par ${gasSymbol == 'ETH' ? 'USDT ERC20 / SHIB' : 'USDT BEP20'} ka official contract nahi hai — yahan sirf $gasSymbol test karo. Mainnet par ye tokens dikhenge.',
+              'There is no official contract for ${gasSymbol == 'ETH' ? 'USDT ERC20 / SHIB' : 'USDT BEP20'} on testnet — here, test only $gasSymbol. These tokens will appear on mainnet.',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -983,11 +984,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         IconButton(
           icon: const Icon(Icons.copy, size: 18),
-          tooltip: 'Address copy karo',
+          tooltip: 'Copy address',
           onPressed: () {
             Clipboard.setData(ClipboardData(text: address));
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Address copy ho gaya')),
+              const SnackBar(content: Text('Address copied')),
             );
           },
         ),

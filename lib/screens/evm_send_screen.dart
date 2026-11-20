@@ -69,13 +69,13 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
       final gwei = gasPrice.toDouble() / 1e9;
       if (mounted) {
         setState(() => _gasNote =
-            'Gas price abhi: ${gwei.toStringAsFixed(1)} Gwei. '
+            'Gas price right now: ${gwei.toStringAsFixed(1)} Gwei. '
             'Native transfer ~21000 gas, token transfer ~60000-100000 gas. '
-            'Fee ${widget.chain.gasSymbol} me lagegi.');
+            'The fee will be charged in ${widget.chain.gasSymbol}.');
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _gasNote = 'Gas price nahi mil paya — internet check karo.');
+        setState(() => _gasNote = 'Could not get the gas price — check your internet.');
       }
     }
   }
@@ -94,10 +94,10 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
       } else if (value.isEmpty) {
         _amountError = null;
       } else if (amount == null || amount <= 0) {
-        _amountError = 'Sahi amount likho (0 se zyada).';
+        _amountError = 'Enter a valid amount (more than 0).';
       } else if (amount > _balanceOf(token)) {
         _amountError =
-            'Balance se zyada hai. Tumhare paas ${_balanceOf(token)} ${token.symbol} hai.';
+            'This is more than your balance. You have ${_balanceOf(token)} ${token.symbol}.';
       } else {
         _amountError = null;
       }
@@ -111,21 +111,21 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
     final amount = double.tryParse(_amountController.text);
     if (token == null || toAddress.isEmpty || amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Address aur sahi amount likho.')),
+        const SnackBar(content: Text('Enter the address and a valid amount.')),
       );
       return;
     }
     if (!toAddress.startsWith('0x') || toAddress.length != 42) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ye sahi EVM address nahi lagta (0x + 40 chars).'),
+          content: Text('This does not look like a valid EVM address (0x + 40 chars).'),
         ),
       );
       return;
     }
     if (amount > _balanceOf(token)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Amount balance se zyada hai.')),
+        const SnackBar(content: Text('The amount is more than your balance.')),
       );
       return;
     }
@@ -133,7 +133,7 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm karo'),
+        title: const Text('Confirm'),
         content: Text(
           '$toAddress • ${widget.chain.displayName} • '
           '$amount ${token.symbol}',
@@ -200,7 +200,7 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
     final token = _selectedToken;
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.chain.displayName} par bhejo'),
+        title: Text('Send on ${widget.chain.displayName}'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -208,7 +208,7 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              'Balance: ${widget.nativeBalance.toStringAsFixed(4)} ${widget.chain.gasSymbol} (gas ke liye)',
+              'Balance: ${widget.nativeBalance.toStringAsFixed(4)} ${widget.chain.gasSymbol} (for gas)',
               style: const TextStyle(color: Colors.grey),
             ),
             if (_gasNote != null) ...[
@@ -265,8 +265,8 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
             TextField(
               controller: _toController,
               decoration: const InputDecoration(
-                labelText: 'Receiver ka address',
-                hintText: '0x... se shuru hone wala address',
+                labelText: "Receiver's address",
+                hintText: 'Address starting with 0x...',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -297,7 +297,7 @@ class _EvmSendScreenState extends State<EvmSendScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Pehli baar kisi naye address par bhej rahe ho to pehle chhota test amount bhejo.',
+              'If you are sending to a new address for the first time, send a small test amount first.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 24),

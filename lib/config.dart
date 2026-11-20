@@ -195,7 +195,7 @@ class MonthlyFeeConfig {
   static const String feeCoinSymbol = 'USDT';
 
   /// Fee kab: har mahine ke aakhri din.
-  static const String feeDueRule = 'Har mahine ke aakhri din';
+  static const String feeDueRule = 'Last day of every month';
 }
 
 // ---------------------------------------------------------------------------

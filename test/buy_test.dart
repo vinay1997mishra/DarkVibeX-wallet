@@ -233,7 +233,7 @@ void main() {
       expect(find.text('India (INR)'), findsOneWidget);
       // Setup nahi hai to Buy button disabled + setup steps dikhte hain
       // (quote aane ke baad — pehle rate dekho).
-      expect(find.text('TEST MODE (Transak staging) — asli paise nahi lagenge. Test card / test details se test karo.'),
+      expect(find.text('TEST MODE (Transak staging) — no real money will be charged. Test with a test card / test details.'),
           findsOneWidget);
     });
 
@@ -269,13 +269,13 @@ void main() {
       // ₹110 likho → Rate dekho → 1 USDT = ₹110 dikhna chahiye.
       await tester.enterText(
           find.byType(TextField), '110');
-      await tester.ensureVisible(find.text('Rate dekho'));
+      await tester.ensureVisible(find.text('See rate'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Rate dekho'));
+      await tester.tap(find.text('See rate'));
       await tester.pumpAndSettle();
-      expect(find.text('₹110 = 1 USDT — Vinay ka set rate (\$1 = ₹110).'),
+      expect(find.text('₹110 = 1 USDT — Vinay\'s set rate (\$1 = ₹110).'),
           findsOneWidget);
-      expect(find.text('Buy link copy karo'), findsOneWidget);
+      expect(find.text('Copy buy link'), findsOneWidget);
       expect(find.textContaining('darkvibex-wallet://buy'), findsOneWidget);
     });
 

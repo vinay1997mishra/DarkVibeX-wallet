@@ -159,7 +159,7 @@ class EvmService {
       );
     }
     if (symbol.isEmpty) {
-      throw Exception('Is contract se symbol nahi mila — ERC20 token nahi lagta.');
+      throw Exception('No symbol was found for this contract — it does not look like an ERC20 token.');
     }
     return TokenInfo(
       id: 'CUSTOM-${symbol.toUpperCase()}',
@@ -222,7 +222,7 @@ class EvmService {
     required double amount,
     required String privateKeyHex,
   }) async {
-    if (amount <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (amount <= 0) throw Exception('The amount must be more than 0.');
     final gasPrice = await getGasPriceWei();
     final nonce = await getNonce(fromAddress);
     final valueWei = BigInt.from((amount * 1e18).round());
@@ -247,7 +247,7 @@ class EvmService {
     required int decimals,
     required String privateKeyHex,
   }) async {
-    if (amount <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (amount <= 0) throw Exception('The amount must be more than 0.');
     var scaled = amount;
     for (var i = 0; i < decimals; i++) {
       scaled *= 10;
@@ -329,7 +329,7 @@ class EvmService {
     final rawHex = '0x${_bytesToHex(rawTx)}';
     final result = await _rpc('eth_sendRawTransaction', [rawHex]);
     if (result == null || result.toString().isEmpty) {
-      throw Exception('Broadcast fail — RPC ne tx hash nahi diya.');
+      throw Exception('Broadcast failed — the RPC did not return a transaction hash.');
     }
     // RPC ka hash hi asli hai (keccak of signed RLP se match karta hai).
     return result.toString();
@@ -344,7 +344,7 @@ class EvmService {
   Future<List<EvmTx>> getHistory(String address) async {
     if (explorerApiKey.isEmpty) {
       throw Exception(
-        'History ke liye ${chain.displayName} explorer API key chahiye — config me dalo (free key).',
+        'An explorer API key for ${chain.displayName} is needed for history — add it in the config (free key).',
       );
     }
     final native = await _explorerCall({
@@ -537,7 +537,7 @@ class Rlp {
         ...payload,
       ]);
     }
-    throw ArgumentError('RLP encode nahi kar sakte: ${input.runtimeType}');
+    throw ArgumentError('Cannot RLP-encode: ${input.runtimeType}');
   }
 
   static Uint8List _encodeBytes(Uint8List bytes) {

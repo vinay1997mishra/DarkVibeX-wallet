@@ -78,7 +78,7 @@ class RecoveryWalletService {
   Future<String> saveWallet(String mnemonic) async {
     final clean = mnemonic.trim().split(RegExp(r'\s+')).join(' ');
     if (!bip39.validateMnemonic(clean)) {
-      throw Exception('Ye seed phrase galat hai. 12 words dobara check karo.');
+      throw Exception('This seed phrase is wrong. Check the 12 words again.');
     }
     final derived = WalletService.deriveFromMnemonic(clean);
     await _store.write(key: mnemonicKey, value: clean);
@@ -100,7 +100,7 @@ class RecoveryWalletService {
   Future<String> getPrivateKeyHex() async {
     final key = await _store.read(key: privateKeyKey);
     if (key == null || key.isEmpty) {
-      throw Exception('Recovery wallet nahi mila. Pehle banao.');
+      throw Exception('Recovery wallet not found. Create one first.');
     }
     return key;
   }

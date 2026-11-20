@@ -132,7 +132,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
     });
     if (biometricEnabled && biometricAvailable) {
       final ok = await _lock.authenticateWithBiometric(
-        reason: 'Saare accounts dekhne ke liye verify karo',
+        reason: 'Verify to view all accounts',
       );
       if (ok && mounted) await _unlock();
     }
@@ -149,11 +149,11 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
     final pin = _pinController.text.trim();
     final confirm = _pinConfirmController.text.trim();
     if (!OwnerLockService.isValidPin(pin)) {
-      setState(() => _lockError = 'PIN 4-6 digit ka hona chahiye.');
+      setState(() => _lockError = 'PIN must be 4-6 digits.');
       return;
     }
     if (pin != confirm) {
-      setState(() => _lockError = 'Dono PIN same hone chahiye.');
+      setState(() => _lockError = 'Both PINs must match.');
       return;
     }
     try {
@@ -170,7 +170,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
   Future<void> _tryPin() async {
     final pin = _unlockPinController.text.trim();
     if (!await _lock.verifyPin(pin)) {
-      setState(() => _lockError = 'Galat PIN. Dobara try karo.');
+      setState(() => _lockError = 'Wrong PIN. Try again.');
       return;
     }
     _unlockPinController.clear();
@@ -179,12 +179,12 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
 
   Future<void> _tryBiometric() async {
     final ok = await _lock.authenticateWithBiometric(
-      reason: 'Saare accounts dekhne ke liye verify karo',
+      reason: 'Verify to view all accounts',
     );
     if (ok) {
       await _unlock();
     } else {
-      setState(() => _lockError = 'Biometric fail hua — PIN se kholo.');
+      setState(() => _lockError = 'Biometric failed — open with PIN.');
     }
   }
 
@@ -262,7 +262,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
       } else {
         final mnemonic = await _recovery.getMnemonic();
         if (mnemonic == null) {
-          _snack('Recovery wallet ki seed nahi mili.');
+          _snack('Recovery wallet seed not found.');
           return;
         }
         secrets = _AccountSecrets(
@@ -285,13 +285,13 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
 
   void _copy(String label, String value) {
     Clipboard.setData(ClipboardData(text: value));
-    _snack('$label copy ho gaya');
+    _snack('$label copied');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saare accounts — Owner only')),
+      appBar: AppBar(title: const Text('All accounts — Owner only')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : switch (_view) {
@@ -311,9 +311,9 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
           const Icon(Icons.lock, size: 56, color: Colors.teal),
           const SizedBox(height: 16),
           const Text(
-            'Saare accounts sirf owner dekh sakta hai. Pehle owner PIN '
-            'set karo — yehi PIN aage se accounts aur Recovery Wallet '
-            'kholne ke liye chahiye hoga.',
+            'Only the owner can view all accounts. First set an owner PIN '
+            '— you will need this same PIN to open accounts and the Recovery Wallet '
+            'from now on.',
             style: TextStyle(fontSize: 15),
           ),
           const SizedBox(height: 20),
@@ -324,7 +324,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
             decoration: const InputDecoration(
-              labelText: 'Owner PIN (4-6 digit)',
+              labelText: 'Owner PIN (4-6 digits)',
               border: OutlineInputBorder(),
               counterText: '',
             ),
@@ -337,7 +337,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
             decoration: const InputDecoration(
-              labelText: 'PIN dobara likho',
+              labelText: 'Enter PIN again',
               border: OutlineInputBorder(),
               counterText: '',
             ),
@@ -354,7 +354,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child:
-                const Text('PIN set karo', style: TextStyle(fontSize: 18)),
+                const Text('Set PIN', style: TextStyle(fontSize: 18)),
           ),
         ],
       ),
@@ -370,9 +370,9 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
           const Icon(Icons.lock, size: 56, color: Colors.teal),
           const SizedBox(height: 16),
           const Text(
-            'Saare accounts dekhne ke liye owner lock kholo. Bina PIN / '
-            'biometric ke yahan kuch nahi dikhega — na list, na address, '
-            'na balance.',
+            'Open the owner lock to view all accounts. Without PIN / '
+            'biometric, nothing will be shown here — no list, no address, '
+            'no balance.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 15),
           ),
@@ -384,7 +384,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             maxLength: 6,
             decoration: const InputDecoration(
-              labelText: 'Owner PIN (4-6 digit)',
+              labelText: 'Owner PIN (4-6 digits)',
               border: OutlineInputBorder(),
               counterText: '',
             ),
@@ -401,14 +401,14 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text('Kholdo', style: TextStyle(fontSize: 18)),
+            child: const Text('Open', style: TextStyle(fontSize: 18)),
           ),
           if (_biometricEnabled && _biometricAvailable) ...[
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: _tryBiometric,
               icon: const Icon(Icons.fingerprint),
-              label: const Text('Fingerprint / Face ID se kholo'),
+              label: const Text('Open with Fingerprint / Face ID'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
@@ -425,7 +425,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
         child: Padding(
           padding: EdgeInsets.all(24),
           child: Text(
-            'App me koi wallet account nahi mila.',
+            'No wallet account found in the app.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 15, color: Colors.grey),
           ),
@@ -438,8 +438,8 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            'App me stored saare accounts — sirf owner ko dikh rahe hain. '
-            'Seed / private key kabhi screenshot ya message me mat bhejo.',
+            'All accounts stored in the app — visible only to the owner. '
+            'Never share your seed / private key in a screenshot or message.',
             style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
           const SizedBox(height: 12),
@@ -452,7 +452,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
               );
             },
             icon: const Icon(Icons.lock, size: 18),
-            label: const Text('Recovery Wallet kholo'),
+            label: const Text('Open Recovery Wallet'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
@@ -485,9 +485,9 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
             const SizedBox(height: 8),
             _row('Network', account.networks.join(', ')),
             _row(
-              'Bana tha',
+              'Created',
               account.createdAt == null
-                  ? 'Pata nahi (is feature se pehle bana tha)'
+                  ? 'Unknown (created before this feature)'
                   : formatDateTime(
                       account.createdAt!.millisecondsSinceEpoch,
                     ),
@@ -532,8 +532,8 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
                 ),
               if (EthereumConfig.isTestnet && BscConfig.isTestnet)
                 const Text(
-                  'Testnet par USDT ERC20 / BEP20 ka official contract '
-                  'nahi hai — sirf ETH / BNB dikh raha hai.',
+                  'There is no official USDT ERC20 / BEP20 contract on testnet '
+                  '— only ETH / BNB are shown.',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
             ],
@@ -544,7 +544,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
                 revealed ? Icons.visibility_off : Icons.visibility,
               ),
               label: Text(
-                revealed ? 'Seed / private key chhupao' : 'Seed dikhao',
+                revealed ? 'Hide seed / private key' : 'Show seed',
               ),
             ),
             if (revealed && secrets != null) ...[
@@ -559,8 +559,8 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Ye words aur keys kisi ko mat do — jo inhe jaanta '
-                      'hai, wo paise nikaal sakta hai.',
+                      'Do not give these words and keys to anyone — anyone who knows them '
+                      'can withdraw your funds.',
                       style: TextStyle(
                         color: Colors.red,
                         fontWeight: FontWeight.bold,
@@ -627,7 +627,7 @@ class _OwnerAccountsScreenState extends State<OwnerAccountsScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.copy, size: 18),
-            tooltip: 'Copy karo',
+            tooltip: 'Copy',
             onPressed: () => _copy(label, value),
           ),
         ],

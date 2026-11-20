@@ -178,12 +178,12 @@ class _SwapScreenState extends State<SwapScreen> {
     final amount = double.tryParse(_amountController.text);
     if (from == null || to == null) return;
     if (amount == null || amount <= 0) {
-      setState(() => _quoteError = 'Sahi amount likho (0 se zyada).');
+      setState(() => _quoteError = 'Enter a valid amount (more than 0).');
       return;
     }
     if (amount > _balanceOf(from)) {
       setState(() => _quoteError =
-          'Balance se zyada hai. Tumhare paas ${_balanceOf(from)} ${from.symbol} hai.');
+          'This is more than your balance. You have ${_balanceOf(from)} ${from.symbol}.');
       return;
     }
     setState(() {
@@ -213,7 +213,7 @@ class _SwapScreenState extends State<SwapScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Swap confirm karo'),
+        title: const Text('Confirm swap'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,13 +228,13 @@ class _SwapScreenState extends State<SwapScreen> {
               'Service fee (${(SwapConfig.swapServiceFeePercent * 100).toStringAsFixed(2)}%): '
               '${quote.serviceFee.toStringAsFixed(6)} ${quote.from.symbol}'),
             Text(
-              'Fee ${quote.from.symbol} me kategi — alag coin nahi chahiye.',
+              'The fee will be deducted in ${quote.from.symbol} — no other coin is needed.',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
-            Text('Minimum milega: '
+            Text('Minimum you will receive: '
                 '${quote.minOut.toStringAsFixed(6)} ${quote.to.symbol}'),
             const Text(
-              'Network fee (TRX gas) alag se lagegi.',
+              'Network fee (TRX gas) will be charged separately.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -268,7 +268,7 @@ class _SwapScreenState extends State<SwapScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Swap bhej diya! Status: Pending — ${result.feeCollected ? 'fee owner ko bhej di.' : 'fee wallet set nahi hai, fee nahi kati.'}',
+            'Swap sent! Status: Pending — ${result.feeCollected ? 'fee sent to the owner.' : 'fee wallet is not set, no fee was deducted.'}',
           ),
         ),
       );
@@ -321,8 +321,8 @@ class _SwapScreenState extends State<SwapScreen> {
             if (_chain != SwapChain.tron) ...[
               const SizedBox(height: 8),
               Text(
-                '$_chainLabel par swap abhi sirf rate dikhata hai — '
-                'execute next step me aayega (Uniswap / PancakeSwap).',
+                'On $_chainLabel, swap only shows the rate for now — '
+                'execution will come in the next step (Uniswap / PancakeSwap).',
                 style: const TextStyle(fontSize: 13, color: Colors.grey),
               ),
             ],
@@ -330,7 +330,7 @@ class _SwapScreenState extends State<SwapScreen> {
 
             // ---- From ----
             _coinDropdown(
-              label: 'From (bhejo)',
+              label: 'From (send)',
               value: from,
               onChanged: (t) => setState(() {
                 _from = t;
@@ -348,14 +348,14 @@ class _SwapScreenState extends State<SwapScreen> {
             Center(
               child: IconButton(
                 icon: const Icon(Icons.swap_vert, size: 28),
-                tooltip: 'Ulta karo',
+                tooltip: 'Swap direction',
                 onPressed: _swapDirection,
               ),
             ),
 
             // ---- To ----
             _coinDropdown(
-              label: 'To (paao)',
+              label: 'To (receive)',
               value: to,
               onChanged: (t) => setState(() {
                 _to = t;
@@ -406,7 +406,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       child: CircularProgressIndicator(
                           color: Colors.white, strokeWidth: 2),
                     )
-                  : const Text('Rate dekho'),
+                  : const Text('See rate'),
             ),
             if (_quoteError != null) ...[
               const SizedBox(height: 12),
@@ -435,29 +435,29 @@ class _SwapScreenState extends State<SwapScreen> {
                         style: const TextStyle(
                             fontSize: 12, color: Colors.grey)),
                     const Divider(),
-                    Text('Tum bhejoge: ${quote.amountIn} ${quote.from.symbol}'),
+                    Text('You will send: ${quote.amountIn} ${quote.from.symbol}'),
                     Text(
                       'Service fee (${(SwapConfig.swapServiceFeePercent * 100).toStringAsFixed(2)}%): '
                       '${quote.serviceFee.toStringAsFixed(6)} ${quote.from.symbol}',
                     ),
                     Text(
-                      'Fee ${quote.from.symbol} me kategi — alag coin '
-                      '(BNB ya koi aur) nahi chahiye.',
+                      'The fee will be deducted in ${quote.from.symbol} — no other coin '
+                      '(BNB or any other) is needed.',
                       style: const TextStyle(
                           fontSize: 12, color: Colors.grey),
                     ),
                     Text(
-                      'Tum paaoge (lagbhag): '
+                      'You will receive (approx.): '
                       '${quote.estimatedOut.toStringAsFixed(6)} ${quote.to.symbol}',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'Minimum milega: ${quote.minOut.toStringAsFixed(6)} ${quote.to.symbol}',
+                      'Minimum you will receive: ${quote.minOut.toStringAsFixed(6)} ${quote.to.symbol}',
                     ),
                     if (!quote.isExecutable) ...[
                       const SizedBox(height: 8),
                       Text(
-                        quote.quoteOnlyReason ?? 'Sirf rate quote hai.',
+                        quote.quoteOnlyReason ?? 'This is a rate quote only.',
                         style: const TextStyle(
                             fontSize: 13, color: Colors.orange),
                       ),
@@ -485,7 +485,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     : Text(
                         quote.isExecutable
                             ? 'Confirm & Swap'
-                            : 'Swap abhi is network par nahi hai',
+                            : 'Swap is not available on this network yet',
                         style: const TextStyle(fontSize: 16),
                       ),
               ),
@@ -505,7 +505,7 @@ class _SwapScreenState extends State<SwapScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Swap bhej diya! (Pending)',
+                    const Text('Swap sent! (Pending)',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Text('Tx: $_doneTxId',
@@ -515,7 +515,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       style: const TextStyle(fontSize: 12),
                     ),
                     const Text(
-                      'Status History screen par Pending se Confirmed hote hue dekho.',
+                      'Watch the status change from Pending to Confirmed on the History screen.',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -524,8 +524,8 @@ class _SwapScreenState extends State<SwapScreen> {
             ],
             const SizedBox(height: 16),
             const Text(
-              'Pehli baar swap kar rahe ho to pehle chhota test amount se karo. '
-              'Rate swap karte waqt thoda badal sakta hai — minimum receive se kam mile to swap fail ho jayega.',
+              'If this is your first swap, try a small test amount first. '
+              'The rate can change slightly while swapping — if you receive less than the minimum, the swap will fail.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],

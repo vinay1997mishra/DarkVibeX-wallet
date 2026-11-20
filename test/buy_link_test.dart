@@ -118,7 +118,7 @@ void main() {
       expect(quote.estimatedUsdt, closeTo(1, 0.0001));
       expect(quote.fiatCurrency, 'INR');
       expect(quote.rateSource,
-          'Vinay ka set rate — \$1 = ₹110 (1 USDT = ₹110)');
+          "Vinay's set rate — \$1 = ₹110 (1 USDT = ₹110)");
     });
 
     test('₹1100 me 10 USDT, ₹55 me 0.5 USDT', () {

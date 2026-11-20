@@ -107,7 +107,7 @@ class WalletService {
   Future<String> saveWallet(String mnemonic) async {
     final clean = mnemonic.trim().split(RegExp(r'\s+')).join(' ');
     if (!bip39.validateMnemonic(clean)) {
-      throw Exception('Ye seed phrase galat hai. 12 words dobara check karo.');
+      throw Exception('This seed phrase is wrong. Check the 12 words again.');
     }
     final derived = deriveFromMnemonic(clean);
     await _storage.write(key: _kMnemonic, value: clean);
@@ -149,7 +149,7 @@ class WalletService {
   Future<String> getPrivateKeyHex() async {
     final key = await _storage.read(key: _kPrivateKey);
     if (key == null || key.isEmpty) {
-      throw Exception('Wallet nahi mila. Pehle wallet banao ya import karo.');
+      throw Exception('No wallet found. Create or import a wallet first.');
     }
     return key;
   }
@@ -160,7 +160,7 @@ class WalletService {
   Future<String> getMnemonic() async {
     final mnemonic = await _storage.read(key: _kMnemonic);
     if (mnemonic == null || mnemonic.isEmpty) {
-      throw Exception('Wallet nahi mila. Pehle wallet banao ya import karo.');
+      throw Exception('No wallet found. Create or import a wallet first.');
     }
     return mnemonic;
   }
@@ -283,7 +283,7 @@ class WalletService {
   static String hexToTronAddress(String hex) {
     final bytes = _hexToBytes(hex);
     if (bytes.length != 21 || bytes[0] != 0x41) {
-      throw FormatException('Ye Tron address hex nahi hai: $hex');
+      throw FormatException('This is not a Tron address hex: $hex');
     }
     return _base58CheckEncode(bytes);
   }

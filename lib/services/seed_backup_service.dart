@@ -78,7 +78,7 @@ import 'package:pointycastle/paddings/pkcs7.dart';
 import '../config.dart';
 
 // ---------------------------------------------------------------------------
-// FINAL RULE — verbatim constants. Yahi single source hai: agreement screen
+// FINAL RULE — constants. Yahi single source hai: agreement screen
 // aur har jagah yahi constants use hote hain, taaki wording ek hi rahe.
 // ---------------------------------------------------------------------------
 
@@ -89,13 +89,14 @@ class SeedBackupPolicy {
       'a real user from your original phone and get your login back within '
       '3 months after logout.';
 
-  /// Final rule — bilkul waisi hi lines jaisi final hui thi.
+  /// Final rule — same meaning as finalised; translated to English
+  /// per Vinay's 100%-English order (2026-11-21).
   static const List<String> ruleLines = [
-    'Wallet banega hi seed se, without Gmail and any other proofs.',
-    'Seed server par PERMANENT rahegi (3 months tak nahi, permanent).',
+    'The wallet is created using only the seed, without Gmail and without any other proof.',
+    'The seed stays on the server PERMANENTLY (not for 3 months — permanently).',
     'Verification ONLY by the real original phone the wallet was created on (same device).',
-    'Real user ko seed owner se sirf 3 months ke andar milegi, AFTER wallet logout (logout day se 3 months, wallet creation day se nahi); uske baad owner kisi ko seed nahi dega, seed server par saved rehne ke baad bhi.',
-    'Agreement me 2 tickmarks — pehla agreement tick, uske baad dusra tickmark show hoga usme seed-backup note likha hoga.',
+    'The real user will get the seed from the owner only within 3 months AFTER wallet logout (3 months from the logout day, not from the wallet creation day); after that, the owner will not give the seed to anyone, even though the seed stays saved on the server.',
+    'The agreement has 2 tickmarks — first the agreement tick, and after that a second tickmark will appear with the seed-backup note written in it.',
   ];
 
   /// Recovery window: 3 months AFTER wallet logout.
@@ -282,7 +283,7 @@ class SeedBackupCrypto {
     Uint8List? iv,
   }) {
     if (key.length != _keyBytes) {
-      throw ArgumentError('Backup key 32 bytes ki honi chahiye (AES-256).');
+      throw ArgumentError('The backup key must be 32 bytes (AES-256).');
     }
     final usedIv = iv ?? generateIv();
     final cipher = PaddedBlockCipherImpl(
@@ -312,7 +313,7 @@ class SeedBackupCrypto {
     Uint8List key,
   ) {
     if (key.length != _keyBytes) {
-      throw ArgumentError('Backup key 32 bytes ki honi chahiye (AES-256).');
+      throw ArgumentError('The backup key must be 32 bytes (AES-256).');
     }
     try {
       final cipher = PaddedBlockCipherImpl(
@@ -332,7 +333,7 @@ class SeedBackupCrypto {
       final decrypted = cipher.process(base64.decode(ciphertextBase64));
       return utf8.decode(decrypted);
     } catch (_) {
-      throw StateError('Backup decrypt nahi hua — galat key ya kharab data.');
+      throw StateError('The backup could not be decrypted — wrong key or corrupted data.');
     }
   }
 }

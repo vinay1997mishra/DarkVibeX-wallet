@@ -232,7 +232,7 @@ void main() {
         feePercent: SwapConfig.swapServiceFeePercent,
         slippagePercent: SwapConfig.swapSlippagePercent,
         mode: SwapMode.quoteOnly,
-        quoteOnlyReason: 'ETH swap execute nahi hota — sirf rate.',
+        quoteOnlyReason: 'ETH swap cannot be executed — rate only.',
       );
       expect(quote.isExecutable, isFalse);
       expect(quote.quoteOnlyReason, isNotEmpty);

@@ -3,14 +3,14 @@
 // Bas itna hi:
 //   1. Address dalte hi, agar network galat lag raha hai to field ke
 //      neeche ek CHHOTI warning line dikhti hai:
-//      "Network galat lag raha hai, USDT doob sakta hai"
+//      "The network looks wrong, USDT could be lost"
 //      Send button kabhi disable nahi hota — warning sirf warning hai.
 //   2. Send dabane par ek CHHOTA popup dikhta hai — address, network
 //      aur amount ek line me. Confirm dabate hi bhej diya jata hai.
 //      Koi extra confirm step nahi hai.
 //   3. Network mismatch ho (TRC20 select, 0x... address) to popup me
-//      ye saaf likha hota hai: "Network galat lag raha hai — is
-//      address par USDT nahi jayega. If the address is wrong, no
+//      ye saaf likha hota hai: "The network looks wrong — USDT
+//      will not go to this address. If the address is wrong, no
 //      refund will be given." Do-button
 //      choice NAHI hai — Confirm dabate hi paise AUTOMATIC in-app
 //      Special (recovery) Wallet me jate hain, galat address par
@@ -163,10 +163,10 @@ class _SendScreenState extends State<SendScreen> {
       if (value.isEmpty) {
         _amountError = null;
       } else if (amount == null || amount <= 0) {
-        _amountError = 'Sahi amount likho (0 se zyada).';
+        _amountError = 'Enter a valid amount (more than 0).';
       } else if (amount > widget.usdtBalance) {
         _amountError =
-            'Balance se zyada hai. Tumhare paas ${formatUsdt(widget.usdtBalance)} USDT hai.';
+            'More than your balance. You have ${formatUsdt(widget.usdtBalance)} USDT.';
       } else {
         _amountError = null;
       }
@@ -191,13 +191,13 @@ class _SendScreenState extends State<SendScreen> {
     final amount = _amount;
     if (toAddress.isEmpty || amount == null || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Address aur sahi amount likho.')),
+        const SnackBar(content: Text('Enter an address and a valid amount.')),
       );
       return;
     }
     if (amount > widget.usdtBalance) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Amount balance se zyada hai.')),
+        const SnackBar(content: Text('Amount is more than your balance.')),
       );
       return;
     }
@@ -218,8 +218,8 @@ class _SendScreenState extends State<SendScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'ERC20/BEP20 se bhejna is starter me abhi nahi hai — '
-            'sirf TRC20 se bhej sakte ho.',
+            'Sending via ERC20/BEP20 is not available in this starter yet — '
+            'you can only send via TRC20.',
           ),
         ),
       );
@@ -248,14 +248,14 @@ class _SendScreenState extends State<SendScreen> {
         ? null
         : AddressValidator.networkLabel(detectedNetwork);
     final recoveryReason = effectiveMismatch
-        ? 'Network mismatch: ${_networkLabels[_selectedNetwork]} select tha, '
-            'address ${intendedNetworkLabel ?? 'dusre network'} ka lagta hai'
+        ? 'Network mismatch: ${_networkLabels[_selectedNetwork]} was selected, '
+            'but the address looks like ${intendedNetworkLabel ?? 'another network'}'
         : null;
 
     final choice = await showDialog<_SendChoice>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm karo'),
+        title: const Text('Confirm'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,16 +267,14 @@ class _SendScreenState extends State<SendScreen> {
             if (effectiveMismatch) ...[
               const SizedBox(height: 8),
               const Text(
-                'Network galat lag raha hai — is address par USDT '
-                'nahi jayega. '
+                'The network looks wrong — USDT will not go to this address. '
                 'If the address is wrong, no refund will be given.',
                 style: TextStyle(fontSize: 13, color: Colors.red),
               ),
               if (!recoveryConfigured) ...[
                 const SizedBox(height: 4),
                 const Text(
-                  'Ye send abhi nahi ho sakta — address aur network '
-                  'dobara check karo.',
+                  'This send cannot go through right now — please check the address and network again.',
                   style: TextStyle(fontSize: 13, color: Colors.grey),
                 ),
               ],
@@ -359,8 +357,8 @@ class _SendScreenState extends State<SendScreen> {
       appBar: AppBar(
         title: Text(
           widget.sendFromRecoveryWallet
-              ? 'Wapas bhejo (Recovery Wallet)'
-              : 'USDT bhejo',
+              ? 'Send back (Recovery Wallet)'
+              : 'Send USDT',
         ),
       ),
       body: SingleChildScrollView(
@@ -370,7 +368,7 @@ class _SendScreenState extends State<SendScreen> {
           children: [
             Text(
               'Balance: ${formatUsdt(widget.usdtBalance)} USDT  •  '
-              '${widget.trxBalance.toStringAsFixed(2)} TRX (fee ke liye)',
+              '${widget.trxBalance.toStringAsFixed(2)} TRX (for fees)',
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -394,8 +392,8 @@ class _SendScreenState extends State<SendScreen> {
             if (_selectedNetwork != AddressNetwork.tron) ...[
               const SizedBox(height: 8),
               const Text(
-                'ERC20/BEP20 se bhejna is starter me abhi nahi hai — '
-                'sirf TRC20 se bhej sakte ho.',
+                'Sending via ERC20/BEP20 is not available in this starter yet — '
+                'you can only send via TRC20.',
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
             ],
@@ -405,10 +403,10 @@ class _SendScreenState extends State<SendScreen> {
             TextField(
               controller: _toController,
               decoration: InputDecoration(
-                labelText: 'Receiver ka address',
+                labelText: "Receiver's address",
                 hintText: _selectedNetwork == AddressNetwork.tron
-                    ? 'T... se shuru hone wala address paste karo'
-                    : '0x... se shuru hone wala address paste karo',
+                    ? 'Paste an address starting with T...'
+                    : 'Paste an address starting with 0x...',
                 border: const OutlineInputBorder(),
               ),
               onChanged: _onAddressChanged,
@@ -458,8 +456,8 @@ class _SendScreenState extends State<SendScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Pehli baar kisi naye address par bhej rahe ho to pehle chhota '
-              'test amount (jaise 1 USDT) bhejo.',
+              'If you are sending to a new address for the first time, first send a small '
+              'test amount (like 1 USDT).',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 24),

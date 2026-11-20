@@ -31,11 +31,11 @@ void main() {
 
     test('rule lines bilkul waisi hi jaisi final hui thi', () {
       expect(SeedBackupPolicy.ruleLines, [
-        'Wallet banega hi seed se, without Gmail and any other proofs.',
-        'Seed server par PERMANENT rahegi (3 months tak nahi, permanent).',
+        'The wallet is created using only the seed, without Gmail and without any other proof.',
+        'The seed stays on the server PERMANENTLY (not for 3 months — permanently).',
         'Verification ONLY by the real original phone the wallet was created on (same device).',
-        'Real user ko seed owner se sirf 3 months ke andar milegi, AFTER wallet logout (logout day se 3 months, wallet creation day se nahi); uske baad owner kisi ko seed nahi dega, seed server par saved rehne ke baad bhi.',
-        'Agreement me 2 tickmarks — pehla agreement tick, uske baad dusra tickmark show hoga usme seed-backup note likha hoga.',
+        'The real user will get the seed from the owner only within 3 months AFTER wallet logout (3 months from the logout day, not from the wallet creation day); after that, the owner will not give the seed to anyone, even though the seed stays saved on the server.',
+        'The agreement has 2 tickmarks — first the agreement tick, and after that a second tickmark will appear with the seed-backup note written in it.',
       ]);
     });
 
@@ -456,14 +456,14 @@ void main() {
         ),
       );
       // Shuru me dusra tick nahi dikhta.
-      expect(find.textContaining('seed-backup note padh liya'), findsNothing);
+      expect(find.textContaining('I have read the seed-backup note'), findsNothing);
       expect(find.textContaining(SeedBackupPolicy.exactNotice), findsNothing);
       // Pehla tick lagao.
       await tester.ensureVisible(find.byType(Checkbox).first);
       await tester.tap(find.byType(Checkbox).first);
       await tester.pump();
       // Ab dusra tick + exact notice dikhta hai.
-      expect(find.textContaining('seed-backup note padh liya'), findsOneWidget);
+      expect(find.textContaining('I have read the seed-backup note'), findsOneWidget);
       expect(
         find.textContaining(SeedBackupPolicy.exactNotice),
         findsOneWidget,
@@ -491,13 +491,13 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.textContaining('Skip karo'));
+      await tester.tap(find.textContaining('Skip — continue'));
       await tester.pump();
       expect(latest, isNotNull);
       expect(latest!.skipped, isTrue);
       expect(latest!.canProceed, isTrue);
       expect(latest!.wantsBackup, isFalse);
-      expect(find.textContaining('seed backup save NAHI hogi'), findsOneWidget);
+      expect(find.textContaining('seed backup will NOT be saved'), findsOneWidget);
     });
   });
 }

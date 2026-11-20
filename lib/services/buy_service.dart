@@ -212,14 +212,14 @@ class BuyService {
 
   /// INR estimate — fixed ₹110 rate se, bina network ke.
   static BuyQuote buildInrEstimate({required double fiatAmount}) {
-    if (fiatAmount <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (fiatAmount <= 0) throw Exception('The amount must be more than 0.');
     return BuyQuote(
       fiatAmount: fiatAmount,
       fiatCurrency: 'INR',
       fiatSymbol: '₹',
       usdtPerFiat: 1 / fixedInrPerUsdt,
       estimatedUsdt: fiatAmount / fixedInrPerUsdt,
-      rateSource: 'Vinay ka set rate — \$1 = ₹110 (1 USDT = ₹110)',
+      rateSource: "Vinay's set rate — \$1 = ₹110 (1 USDT = ₹110)",
     );
   }
 
@@ -229,7 +229,7 @@ class BuyService {
     required double fiatAmount,
     required BuyCountry country,
   }) async {
-    if (fiatAmount <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
+    if (fiatAmount <= 0) throw Exception('The amount must be more than 0.');
     if (country.fiatCurrency == 'INR') {
       return buildInrEstimate(fiatAmount: fiatAmount);
     }
@@ -251,7 +251,7 @@ class BuyService {
     final res = await _client.get(uri);
     if (res.statusCode != 200) {
       throw Exception(
-        'Rate nahi mil paya (CoinGecko HTTP ${res.statusCode}). Internet check karo, thodi der baad dobara try karo.',
+        'Could not fetch the rate (CoinGecko HTTP ${res.statusCode}). Check your internet and try again in a little while.',
       );
     }
     return parseUsdtFiatRate(res.body, fiatCurrency);
@@ -262,10 +262,10 @@ class BuyService {
   static double parseUsdtFiatRate(String body, String fiatCurrency) {
     final json = jsonDecode(body) as Map<String, dynamic>;
     final tether = json['tether'];
-    if (tether is! Map) throw Exception('Rate nahi mila (CoinGecko).');
+    if (tether is! Map) throw Exception('Rate not found (CoinGecko).');
     final rate = tether[fiatCurrency.toLowerCase()];
     if (rate is! num || rate <= 0) {
-      throw Exception('Is currency ka rate nahi mila (CoinGecko).');
+      throw Exception('Rate not found for this currency (CoinGecko).');
     }
     return rate.toDouble();
   }
@@ -277,8 +277,8 @@ class BuyService {
     required BuyCountry country,
     required double usdtFiatRate,
   }) {
-    if (fiatAmount <= 0) throw Exception('Amount 0 se zyada hona chahiye.');
-    if (usdtFiatRate <= 0) throw Exception('Rate 0 se zyada hona chahiye.');
+    if (fiatAmount <= 0) throw Exception('The amount must be more than 0.');
+    if (usdtFiatRate <= 0) throw Exception('The rate must be more than 0.');
     return BuyQuote(
       fiatAmount: fiatAmount,
       fiatCurrency: country.fiatCurrency,
@@ -303,11 +303,11 @@ class BuyService {
   }) {
     if (!BuyConfig.isConfigured) {
       throw Exception(
-        'Buy setup nahi hai — Transak API key config me dalo (README dekho).',
+        'Buy is not set up — add the Transak API key in the config (see README).',
       );
     }
     if (walletAddress.isEmpty) {
-      throw Exception('Wallet address nahi mila — pehle wallet banao.');
+      throw Exception('Wallet address not found — create a wallet first.');
     }
     final params = <String, String>{
       'apiKey': BuyConfig.transakApiKey,

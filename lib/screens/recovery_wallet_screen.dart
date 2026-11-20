@@ -143,11 +143,11 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
     final pin = _pinController.text.trim();
     final confirm = _pinConfirmController.text.trim();
     if (!OwnerLockService.isValidPin(pin)) {
-      _snack('PIN 4-6 digit ka hona chahiye.');
+      _snack('PIN must be 4-6 digits.');
       return;
     }
     if (pin != confirm) {
-      _snack('Dono PIN same hone chahiye.');
+      _snack('Both PINs must match.');
       return;
     }
     try {
@@ -159,7 +159,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
       if (!mounted) return;
       setState(() => _address = address);
       await _unlock();
-      _snack('Recovery Wallet ban gaya — seed ko safe jagah rakhna!');
+      _snack('Recovery Wallet created — keep your seed in a safe place!');
     } catch (e) {
       _snack(e.toString().replaceFirst('Exception: ', ''));
     }
@@ -183,7 +183,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
   Future<void> _tryPin() async {
     final pin = _unlockPinController.text.trim();
     if (!await _lock.verifyPin(pin)) {
-      setState(() => _lockError = 'Galat PIN. Dobara try karo.');
+      setState(() => _lockError = 'Wrong PIN. Try again.');
       return;
     }
     _unlockPinController.clear();
@@ -196,7 +196,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
       await _unlock();
     } else {
       setState(
-        () => _lockError = 'Biometric fail hua — PIN se kholo.',
+        () => _lockError = 'Biometric failed — open with PIN.',
       );
     }
   }
@@ -206,17 +206,17 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
     final pin = _forgotPinController.text.trim();
     final confirm = _forgotPinConfirmController.text.trim();
     if (pin != confirm) {
-      _snack('Dono PIN same hone chahiye.');
+      _snack('Both PINs must match.');
       return;
     }
     final ok = await _lock.resetPinWithSeed(seed, pin);
     if (!ok) {
-      _snack('Seed galat hai ya PIN galat format ka hai.');
+      _snack('The seed is wrong or the PIN is in the wrong format.');
       return;
     }
     if (!mounted) return;
     setState(() => _view = _RecoveryView.locked);
-    _snack('Naya PIN set ho gaya — ab PIN se kholo.');
+    _snack('New PIN set — now open with your PIN.');
   }
 
   // ---------------------------------------------------------------------------
@@ -265,7 +265,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
     _txStatus.pollTxStatus(result.txId, (status) {
       if (status != TxStatus.pending && mounted) _refresh();
     });
-    _snack('Wapas bhej diya! Status: Pending.');
+    _snack('Sent back! Status: Pending.');
     await _refresh();
   }
 
@@ -275,20 +275,20 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
       _newPinController.text.trim(),
     );
     if (!ok) {
-      _snack('Purana PIN galat hai ya naya PIN 4-6 digit ka nahi hai.');
+      _snack('The old PIN is wrong or the new PIN is not 4-6 digits.');
       return;
     }
     if (!mounted) return;
     setState(() => _changingPin = false);
     _oldPinController.clear();
     _newPinController.clear();
-    _snack('PIN badal gaya.');
+    _snack('PIN changed.');
   }
 
   Future<void> _toggleBiometric(bool value) async {
     final ok = await _lock.setBiometricEnabled(value);
     if (!ok) {
-      _snack('Biometric on nahi hua — dobara try karo.');
+      _snack('Biometric could not be turned on — try again.');
       return;
     }
     if (mounted) setState(() => _biometricEnabled = value);
@@ -298,12 +298,12 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
     final yes = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Recovery Wallet delete karo?'),
+        title: const Text('Delete Recovery Wallet?'),
         content: const Text(
-          'Ye wallet is phone se delete ho jayega aur owner PIN bhi '
-          'hat jayega. Paise blockchain par rahenge — 12 words se '
-          'wapas la sakte ho. Bina 12 words ke paise hamesha ke liye '
-          'kho jayenge.',
+          'This wallet will be deleted from this phone and the owner PIN will also '
+          'be removed. Your funds will stay on the blockchain — you can recover them with the 12 words. '
+          'Without the 12 words, your funds will be lost '
+          'forever.',
         ),
         actions: [
           TextButton(
@@ -312,7 +312,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete karo',
+            child: const Text('Delete',
                 style: TextStyle(color: Colors.red)),
           ),
         ],
@@ -360,14 +360,14 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Recovery Wallet banao',
+          'Create Recovery Wallet',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         const Text(
-          'Ye app ke andar ek alag wallet hai — main wallet se alag. '
-          'Galat network wale sends ke paise yahin aayenge. Sirf tum '
-          '(owner) ise khol payoge.',
+          'This is a separate wallet inside the app — different from the main wallet. '
+          'Funds from sends on the wrong network will arrive here. Only you '
+          '(the owner) can open it.',
           style: TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 20),
@@ -375,11 +375,11 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           if (preview == null)
             ElevatedButton(
               onPressed: _startSetup,
-              child: const Text('Naya Recovery Wallet banao'),
+              child: const Text('Create a new Recovery Wallet'),
             )
           else ...[
             const Text(
-              '12 words — kagaz par likh lo, screenshot mat lo:',
+              '12 words — write them down on paper, do not take a screenshot:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -408,7 +408,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
                       setState(() => _seedWritten = value ?? false),
                 ),
                 const Expanded(
-                  child: Text('Maine 12 words safe jagah likh liye hain.'),
+                  child: Text('I have written down the 12 words in a safe place.'),
                 ),
               ],
             ),
@@ -417,17 +417,17 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
               onPressed: _seedWritten
                   ? () => setState(() => _view = _RecoveryView.setupPin)
                   : null,
-              child: const Text('Aage badho — PIN set karo'),
+              child: const Text('Continue — set PIN'),
             ),
           ],
           const SizedBox(height: 12),
           TextButton(
             onPressed: () => setState(() => _showImport = true),
-            child: const Text('Pehle se recovery wallet hai? Seed se lao'),
+            child: const Text('Already have a recovery wallet? Restore it with your seed'),
           ),
         ] else ...[
           const Text(
-            'Apne recovery wallet ke 12 words yahan likho:',
+            "Enter your recovery wallet's 12 words here:",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -442,11 +442,11 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => setState(() => _view = _RecoveryView.setupPin),
-            child: const Text('Aage badho — PIN set karo'),
+            child: const Text('Continue — set PIN'),
           ),
           TextButton(
             onPressed: () => setState(() => _showImport = false),
-            child: const Text('Wapas — naya wallet banao'),
+            child: const Text('Back — create a new wallet'),
           ),
         ],
       ],
@@ -458,13 +458,13 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'Owner PIN set karo',
+          'Set owner PIN',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         const Text(
-          'Ye PIN sirf tumhe pata hona chahiye. Bina PIN ke recovery '
-          'wallet koi nahi khol payega — normal user bhi nahi.',
+          'Only you should know this PIN. Without the PIN, no one can open the recovery '
+          'wallet — not even a normal user.',
           style: TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 20),
@@ -474,7 +474,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           keyboardType: TextInputType.number,
           maxLength: 6,
           decoration: const InputDecoration(
-            labelText: 'PIN (4-6 digit)',
+            labelText: 'PIN (4-6 digits)',
             border: OutlineInputBorder(),
             counterText: '',
           ),
@@ -486,7 +486,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           keyboardType: TextInputType.number,
           maxLength: 6,
           decoration: const InputDecoration(
-            labelText: 'PIN dobara likho',
+            labelText: 'Enter PIN again',
             border: OutlineInputBorder(),
             counterText: '',
           ),
@@ -494,11 +494,11 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: _finishSetup,
-          child: const Text('Recovery Wallet save karo'),
+          child: const Text('Save Recovery Wallet'),
         ),
         TextButton(
           onPressed: () => setState(() => _view = _RecoveryView.setupSeed),
-          child: const Text('Wapas'),
+          child: const Text('Back'),
         ),
       ],
     );
@@ -517,9 +517,9 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         ),
         const SizedBox(height: 8),
         const Text(
-          'Recovery Wallet sirf owner khol sakta hai. Bina PIN ya '
-          'biometric ke yahan kuch nahi dikhega — balance, address, '
-          'seed, history, kuch bhi nahi.',
+          'Only the owner can open the Recovery Wallet. Without PIN or '
+          'biometric, nothing will be shown here — no balance, address, '
+          'seed, history, nothing.',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.grey),
         ),
@@ -543,20 +543,20 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: _tryPin,
-          child: const Text('PIN se kholo'),
+          child: const Text('Open with PIN'),
         ),
         if (_biometricEnabled && _biometricAvailable) ...[
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: _tryBiometric,
             icon: const Icon(Icons.fingerprint),
-            label: const Text('Fingerprint / Face ID se kholo'),
+            label: const Text('Open with Fingerprint / Face ID'),
           ),
         ],
         const SizedBox(height: 12),
         TextButton(
           onPressed: () => setState(() => _view = _RecoveryView.forgotPin),
-          child: const Text('PIN bhool gaye? Seed se naya PIN set karo'),
+          child: const Text('Forgot your PIN? Set a new PIN with your seed'),
         ),
       ],
     );
@@ -567,13 +567,13 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
-          'PIN bhool gaye?',
+          'Forgot your PIN?',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         const Text(
-          'Recovery wallet ke 12 words se verify karke naya PIN set '
-          'karo. Seed bhi nahi hai to wallet kabhi nahi khul payega.',
+          "Verify with your recovery wallet's 12 words to set a new PIN. "
+          'If you do not have the seed either, the wallet can never be opened.',
           style: TextStyle(color: Colors.grey),
         ),
         const SizedBox(height: 20),
@@ -592,7 +592,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           keyboardType: TextInputType.number,
           maxLength: 6,
           decoration: const InputDecoration(
-            labelText: 'Naya PIN (4-6 digit)',
+            labelText: 'New PIN (4-6 digits)',
             border: OutlineInputBorder(),
             counterText: '',
           ),
@@ -604,7 +604,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           keyboardType: TextInputType.number,
           maxLength: 6,
           decoration: const InputDecoration(
-            labelText: 'Naya PIN dobara likho',
+            labelText: 'Enter new PIN again',
             border: OutlineInputBorder(),
             counterText: '',
           ),
@@ -612,11 +612,11 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: _resetPinWithSeed,
-          child: const Text('Naya PIN set karo'),
+          child: const Text('Set new PIN'),
         ),
         TextButton(
           onPressed: () => setState(() => _view = _RecoveryView.locked),
-          child: const Text('Wapas — PIN se kholo'),
+          child: const Text('Back — open with PIN'),
         ),
       ],
     );
@@ -638,7 +638,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
             const Spacer(),
             IconButton(
               icon: const Icon(Icons.refresh),
-              tooltip: 'Refresh karo',
+              tooltip: 'Refresh',
               onPressed: _refresh,
             ),
           ],
@@ -663,7 +663,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
                 ),
               ),
               Text(
-                'TRX: ${_trxBalance.toStringAsFixed(2)} (fee ke liye)',
+                'TRX: ${_trxBalance.toStringAsFixed(2)} (for fees)',
                 style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 8),
@@ -679,7 +679,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
                     icon: const Icon(Icons.copy, size: 18),
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: address));
-                      _snack('Address copy ho gaya');
+                      _snack('Address copied');
                     },
                   ),
                 ],
@@ -691,7 +691,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         ElevatedButton.icon(
           onPressed: _usdtBalance > 0 ? _openSendBack : null,
           icon: const Icon(Icons.arrow_upward),
-          label: const Text('Wapas bhejo (user ke sahi address par)'),
+          label: const Text("Send back (to the user's correct address)"),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.teal,
             foregroundColor: Colors.white,
@@ -709,12 +709,12 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
               });
             }
           },
-          child: Text(_showSeed ? 'Seed chhupao' : 'Seed words dikhao'),
+          child: Text(_showSeed ? 'Hide seed' : 'Show seed words'),
         ),
         if (_showSeed && _mnemonic != null) ...[
           const SizedBox(height: 12),
           const Text(
-            'Seed sirf tumhare liye hai — kisi ko mat do, screenshot mat lo:',
+            'This seed is only for you — do not give it to anyone, do not take a screenshot:',
             style: TextStyle(color: Colors.red, fontSize: 13),
           ),
           const SizedBox(height: 8),
@@ -728,13 +728,13 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         ],
         const SizedBox(height: 24),
         const Text(
-          'Is wallet ki history',
+          'History of this wallet',
           style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         if (_history.isEmpty)
           const Text(
-            'Abhi koi transaction nahi hai.',
+            'No transactions yet.',
             style: TextStyle(color: Colors.grey),
           )
         else
@@ -774,8 +774,8 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           title: const Text('Biometric unlock (fingerprint / Face ID)'),
           subtitle: Text(
             _biometricAvailable
-                ? 'On karne par PIN ke bina bhi khul jayega'
-                : 'Is phone par biometric available nahi hai',
+                ? 'When turned on, it will open without a PIN'
+                : 'Biometric is not available on this phone',
           ),
           value: _biometricEnabled,
           onChanged: _biometricAvailable ? _toggleBiometric : null,
@@ -783,7 +783,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
         if (!_changingPin)
           OutlinedButton(
             onPressed: () => setState(() => _changingPin = true),
-            child: const Text('PIN badlo'),
+            child: const Text('Change PIN'),
           )
         else ...[
           TextField(
@@ -792,7 +792,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
             keyboardType: TextInputType.number,
             maxLength: 6,
             decoration: const InputDecoration(
-              labelText: 'Purana PIN',
+              labelText: 'Old PIN',
               border: OutlineInputBorder(),
               counterText: '',
             ),
@@ -804,7 +804,7 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
             keyboardType: TextInputType.number,
             maxLength: 6,
             decoration: const InputDecoration(
-              labelText: 'Naya PIN (4-6 digit)',
+              labelText: 'New PIN (4-6 digits)',
               border: OutlineInputBorder(),
               counterText: '',
             ),
@@ -812,14 +812,14 @@ class _RecoveryWalletScreenState extends State<RecoveryWalletScreen> {
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: _changePin,
-            child: const Text('PIN badlo'),
+            child: const Text('Change PIN'),
           ),
         ],
         const SizedBox(height: 12),
         TextButton(
           onPressed: _deleteWallet,
           child: const Text(
-            'Recovery Wallet delete karo',
+            'Delete Recovery Wallet',
             style: TextStyle(color: Colors.red),
           ),
         ),

@@ -64,28 +64,28 @@ class AddressValidator {
     final address = rawAddress.trim();
 
     if (address.isEmpty) {
-      return AddressValidation.invalid('Address khaali hai.');
+      return AddressValidation.invalid('The address is empty.');
     }
 
     // The most common costly mistake: pasting an Ethereum address here.
     if (address.startsWith('0x') || address.startsWith('0X')) {
       return AddressValidation.invalid(
-        'Ye Ethereum (ERC20) address hai. Is wallet se sirf Tron (TRC20) '
-        'address par bhejo — jo T se shuru hota hai.',
+        'This is an Ethereum (ERC20) address. From this wallet, send only to a Tron (TRC20) '
+        'address — one that starts with T.',
         network: AddressNetwork.ethereum,
       );
     }
 
     if (!address.startsWith('T')) {
       return AddressValidation.invalid(
-        'Tron address hamesha T se shuru hota hai.',
+        'A Tron address always starts with T.',
       );
     }
 
     if (address.length != 34) {
       return AddressValidation.invalid(
-        'Tron address 34 characters ka hota hai. Ye ${address.length} '
-        'characters ka hai — copy karte waqt kahin cut to nahi gaya?',
+        'A Tron address is 34 characters long. This one is ${address.length} '
+        'characters long — did it get cut off while copying?',
         network: AddressNetwork.tron,
       );
     }
@@ -93,8 +93,8 @@ class AddressValidator {
     // Base58 alphabet only: 0, O, I and l are never used.
     if (!RegExp(r'^[1-9A-HJ-NP-Za-km-z]+$').hasMatch(address)) {
       return AddressValidation.invalid(
-        'Address me galat character hai. Tron address me 0, O, I, l kabhi '
-        'nahi hote — shayad galat type ho gaya hai.',
+        'The address has a wrong character. A Tron address never contains 0, O, I or l — '
+        'it may have been typed wrong.',
         network: AddressNetwork.tron,
       );
     }
@@ -102,8 +102,8 @@ class AddressValidator {
     // Checksum: catches an address that was changed by even one character.
     if (!WalletService.isValidTronAddress(address)) {
       return AddressValidation.invalid(
-        'Address ka checksum galat hai — address copy karte waqt badal gaya '
-        'ho sakta hai. Dobara copy karke paste karo.',
+        'The address checksum is wrong — the address may have changed while copying. '
+        'Copy it again and paste it.',
         network: AddressNetwork.tron,
       );
     }
@@ -179,14 +179,14 @@ class AddressValidator {
   ) {
     final address = rawAddress.trim();
     if (address.isEmpty) {
-      return AddressValidation.invalid('Address khaali hai.');
+      return AddressValidation.invalid('The address is empty.');
     }
 
     final detected = detectNetworkFromAddress(address);
     if (detected == null) {
       return AddressValidation.invalid(
-        'Address pehchana nahi gaya. Tron address T se shuru hota hai, '
-        'Ethereum/BSC address 0x se.',
+        'The address was not recognised. A Tron address starts with T, '
+        'and an Ethereum/BSC address starts with 0x.',
       );
     }
 
@@ -194,8 +194,8 @@ class AddressValidator {
     if (selected == AddressNetwork.tron && detected != AddressNetwork.tron) {
       return AddressValidation.valid(
         warning:
-            'Network galat lag raha hai, USDT doob sakta hai — tumne TRC20 '
-            'select kiya hai lekin ye address ERC20 ka lagta hai. '
+            'The network looks wrong, USDT could be lost — you selected TRC20 '
+            'but this looks like an ERC20 address. '
             'If the address is wrong, no refund will be given.',
         network: detected,
       );
@@ -204,8 +204,8 @@ class AddressValidator {
         detected == AddressNetwork.tron) {
       return AddressValidation.valid(
         warning:
-            'Network galat lag raha hai, USDT doob sakta hai — tumne ERC20 '
-            'select kiya hai lekin ye address TRC20 ka lagta hai. '
+            'The network looks wrong, USDT could be lost — you selected ERC20 '
+            'but this looks like a TRC20 address. '
             'If the address is wrong, no refund will be given.',
         network: detected,
       );
@@ -213,8 +213,8 @@ class AddressValidator {
     if (selected == AddressNetwork.bsc && detected == AddressNetwork.tron) {
       return AddressValidation.valid(
         warning:
-            'Network galat lag raha hai, USDT doob sakta hai — tumne BEP20 '
-            'select kiya hai lekin ye address TRC20 ka lagta hai. '
+            'The network looks wrong, USDT could be lost — you selected BEP20 '
+            'but this looks like a TRC20 address. '
             'If the address is wrong, no refund will be given.',
         network: detected,
       );
@@ -247,19 +247,19 @@ class AddressValidator {
     final address = rawAddress.trim();
 
     if (address.isEmpty) {
-      return AddressValidation.invalid('Address khaali hai.');
+      return AddressValidation.invalid('The address is empty.');
     }
 
     if (!address.startsWith('0x') && !address.startsWith('0X')) {
       return AddressValidation.invalid(
-        'Ethereum address 0x se shuru hota hai.',
+        'An Ethereum address starts with 0x.',
       );
     }
 
     if (address.length != 42) {
       return AddressValidation.invalid(
-        'Ethereum address 42 characters ka hota hai (0x + 40). Ye '
-        '${address.length} characters ka hai.',
+        'An Ethereum address is 42 characters long (0x + 40). This one is '
+        '${address.length} characters long.',
         network: AddressNetwork.ethereum,
       );
     }
@@ -267,7 +267,7 @@ class AddressValidator {
     final hexPart = address.substring(2);
     if (!RegExp(r'^[0-9a-fA-F]{40}$').hasMatch(hexPart)) {
       return AddressValidation.invalid(
-        'Address me sirf 0-9 aur a-f characters hone chahiye.',
+        'The address must contain only 0-9 and a-f characters.',
         network: AddressNetwork.ethereum,
       );
     }
@@ -279,8 +279,8 @@ class AddressValidator {
     if (hasLower && hasUpper) {
       if (!_isValidEip55Checksum(address)) {
         return AddressValidation.invalid(
-          'Address ka checksum (EIP-55) galat hai — address badla hua lagta '
-          'hai. Dobara copy karo.',
+          'The address checksum (EIP-55) is wrong — the address looks changed. '
+          'Copy it again.',
           network: AddressNetwork.ethereum,
         );
       }
@@ -290,8 +290,7 @@ class AddressValidator {
     // All one case: format is fine, but there is no checksum to verify.
     return AddressValidation.valid(
       network: AddressNetwork.ethereum,
-      warning: 'Ye address checksum ke bina hai. Bhejne se pehle isko ek '
-          'baar aur dhyaan se check kar lo.',
+      warning: 'This address has no checksum. Check it carefully once more before sending.',
     );
   }
 

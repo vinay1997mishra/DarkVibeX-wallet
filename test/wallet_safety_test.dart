@@ -115,8 +115,8 @@ void main() {
         AddressNetwork.tron,
       );
       expect(result.isValid, isTrue); // Vinay: no hard block, ever
-      expect(result.warning, contains('Network galat lag raha hai'));
-      expect(result.warning, contains('doob sakta hai'));
+      expect(result.warning, contains('The network looks wrong'));
+      expect(result.warning, contains('could be lost'));
       // Vinay (2026-11-21): no-refund line is in English.
       expect(result.warning, contains('no refund will be given'));
     });
@@ -127,7 +127,7 @@ void main() {
         AddressNetwork.ethereum,
       );
       expect(result.isValid, isTrue);
-      expect(result.warning, contains('Network galat lag raha hai'));
+      expect(result.warning, contains('The network looks wrong'));
     });
 
     test('BEP20 selected + T address = small warning, never blocked', () {
@@ -136,7 +136,7 @@ void main() {
         AddressNetwork.bsc,
       );
       expect(result.isValid, isTrue);
-      expect(result.warning, contains('Network galat lag raha hai'));
+      expect(result.warning, contains('The network looks wrong'));
     });
 
     test('Tron address with a broken checksum is rejected', () {

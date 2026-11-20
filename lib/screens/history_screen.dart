@@ -120,8 +120,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               if (tx.isRecoveryRedirect) ...[
                 _detailRow(
                   'Recovery redirect',
-                  'Ye paise recovery wallet par gaye — original address '
-                  'par nahi. Support ko hash dikha kar wapas claim karo.',
+                  'This money went to the recovery wallet — not to the original address. '
+                  'Show the hash to support to claim it back.',
                 ),
                 if (tx.originalAddress != null)
                   _detailRow('Original address', tx.originalAddress!),
@@ -148,14 +148,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Clipboard.setData(ClipboardData(text: tx.txId));
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Hash copy ho gaya')),
+                const SnackBar(content: Text('Hash copied')),
               );
             },
-            child: const Text('Hash copy karo'),
+            child: const Text('Copy hash'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Band karo'),
+            child: const Text('Close'),
           ),
         ],
       ),
@@ -191,7 +191,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh karo',
+            tooltip: 'Refresh',
             onPressed: _load,
           ),
         ],
@@ -210,7 +210,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         const SizedBox(height: 12),
                         ElevatedButton(
                           onPressed: _load,
-                          child: const Text('Dobara try karo'),
+                          child: const Text('Try again'),
                         ),
                       ],
                     ),
@@ -219,7 +219,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               : items.isEmpty
                   ? const Center(
                       child: Text(
-                        'Abhi koi transaction nahi hai.',
+                        'No transactions yet.',
                         style: TextStyle(color: Colors.grey),
                       ),
                     )
@@ -253,7 +253,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ),
                               subtitle: Text(
                                 '${outgoing ? 'To ' : 'From '}${shortAddress(outgoing ? tx.to : tx.from)}'
-                                '${tx.isRecoveryRedirect ? '\nRecovery redirect — original address history me hai' : ''}'
+                                '${tx.isRecoveryRedirect ? '\nRecovery redirect — the original address is in history' : ''}'
                                 '\n${formatDateTime(tx.timestampMs)}'
                                 '\nHash: ${shortAddress(tx.txId)}',
                               ),

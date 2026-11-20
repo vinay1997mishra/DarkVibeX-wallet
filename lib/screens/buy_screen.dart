@@ -93,7 +93,7 @@ class _BuyScreenState extends State<BuyScreen> {
   Future<void> _getQuote() async {
     final amount = double.tryParse(_amountController.text);
     if (amount == null || amount <= 0) {
-      setState(() => _quoteError = 'Sahi amount likho (0 se zyada).');
+      setState(() => _quoteError = 'Enter a valid amount (more than 0).');
       return;
     }
     setState(() {
@@ -136,13 +136,13 @@ class _BuyScreenState extends State<BuyScreen> {
       if (!mounted) return;
       if (!ok) {
         setState(() => _launchError =
-            'Browser nahi khul paya. Link copy karke browser me kholo:\n$url');
+            'The browser could not be opened. Copy the link and open it in your browser:\n$url');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Transak browser me khul gaya. Payment + KYC wahin hoga — '
-              'USDT aate hi Home par balance badhega.',
+              'Transak has opened in your browser. Payment and KYC will happen there — '
+              'your balance on Home will increase as soon as the USDT arrives.',
             ),
           ),
         );
@@ -173,7 +173,7 @@ class _BuyScreenState extends State<BuyScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Buy link copy ho gaya:\n$link'),
+        content: Text('Buy link copied:\n$link'),
         duration: const Duration(seconds: 4),
       ),
     );
@@ -210,10 +210,10 @@ class _BuyScreenState extends State<BuyScreen> {
               ),
               child: Text(
                 isTest
-                    ? 'TEST MODE (Transak staging) — asli paise nahi lagenge. '
-                        'Test card / test details se test karo.'
-                    : 'REAL MODE (Transak production) — asli paise lagenge. '
-                        'KYC karni padegi, aur rate + fee checkout me dikhegi.',
+                    ? 'TEST MODE (Transak staging) — no real money will be charged. '
+                        'Test with a test card / test details.'
+                    : 'REAL MODE (Transak production) — real money will be charged. '
+                        'You will need to complete KYC, and the rate and fee will be shown at checkout.',
                 style: const TextStyle(fontSize: 13),
               ),
             ),
@@ -238,7 +238,7 @@ class _BuyScreenState extends State<BuyScreen> {
             ),
             const SizedBox(height: 4),
             const Text(
-              'Country ke hisaab se currency aur payment methods badalte hain.',
+              'Currency and payment methods change based on the country.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 20),
@@ -276,14 +276,14 @@ class _BuyScreenState extends State<BuyScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              '${_country.name} me ye methods hain: ${_methods.map((m) => m.label).join(', ')}. '
-              'Final list Transak widget me dikhegi — wahan se bhi chun sakte ho.',
+              'In ${_country.name} these methods are available: ${_methods.map((m) => m.label).join(', ')}. '
+              'The final list will be shown in the Transak widget — you can also choose from there.',
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
             const SizedBox(height: 20),
 
             // ---- Network ----
-            const Text('Network (USDT kahan aayega)',
+            const Text('Network (where the USDT will arrive)',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Wrap(
@@ -305,14 +305,14 @@ class _BuyScreenState extends State<BuyScreen> {
                 Expanded(
                   child: Text(
                     _walletAddress.isEmpty
-                        ? 'Address nahi mila.'
-                        : 'USDT is address par aayega: ${_walletAddress.length > 18 ? '${_walletAddress.substring(0, 10)}...${_walletAddress.substring(_walletAddress.length - 6)}' : _walletAddress}',
+                        ? 'Address not found.'
+                        : 'USDT will arrive at this address: ${_walletAddress.length > 18 ? '${_walletAddress.substring(0, 10)}...${_walletAddress.substring(_walletAddress.length - 6)}' : _walletAddress}',
                     style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy, size: 18),
-                  tooltip: 'Address copy karo',
+                  tooltip: 'Copy address',
                   onPressed: _walletAddress.isEmpty
                       ? null
                       : () {
@@ -320,7 +320,7 @@ class _BuyScreenState extends State<BuyScreen> {
                               ClipboardData(text: _walletAddress));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Address copy ho gaya')),
+                                content: Text('Address copied')),
                           );
                         },
                 ),
@@ -343,7 +343,7 @@ class _BuyScreenState extends State<BuyScreen> {
                       child: CircularProgressIndicator(
                           color: Colors.white, strokeWidth: 2),
                     )
-                  : const Text('Rate dekho'),
+                  : const Text('See rate'),
             ),
             if (_quoteError != null) ...[
               const SizedBox(height: 12),
@@ -373,28 +373,28 @@ class _BuyScreenState extends State<BuyScreen> {
                     if (quote.fiatCurrency == 'INR') ...[
                       const SizedBox(height: 4),
                       const Text(
-                        '₹110 = 1 USDT — Vinay ka set rate (\$1 = ₹110).',
+                        "₹110 = 1 USDT — Vinay's set rate (\$1 = ₹110).",
                         style: TextStyle(
                             fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                     ],
                     const Divider(),
                     Text(
-                      'Tum doge: ${quote.fiatSymbol}${quote.fiatAmount.toStringAsFixed(2)} '
+                      'You will pay: ${quote.fiatSymbol}${quote.fiatAmount.toStringAsFixed(2)} '
                       '(${quote.fiatCurrency}) • ${_method.label}',
                     ),
                     Text(
-                      'Tum paaoge (lagbhag, fee se pehle): '
+                      'You will receive (approx., before fee): '
                       '${quote.estimatedUsdt.toStringAsFixed(4)} USDT '
                       '• ${_network.label}',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Ye sirf ESTIMATE hai — Transak ki asli fee aur final '
-                      'rate checkout (widget) me dikhega, usse pehle confirm '
-                      'mat samjho. Fee method par depend karti hai (card par '
-                      'zyada, UPI/bank par alag ho sakti hai).',
+                      "This is only an ESTIMATE — Transak's actual fee and final "
+                      'rate will be shown at checkout (in the widget); do not treat it as confirmed '
+                      'before that. The fee depends on the method (higher on card, '
+                      'may differ on UPI/bank).',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
@@ -410,8 +410,8 @@ class _BuyScreenState extends State<BuyScreen> {
                 ),
                 child: Text(
                   configured
-                      ? 'Transak par kharido (${_method.label})'
-                      : 'Buy setup nahi hai',
+                      ? 'Buy on Transak (${_method.label})'
+                      : 'Buy is not set up',
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
@@ -424,11 +424,11 @@ class _BuyScreenState extends State<BuyScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Text(
-                    'Buy abhi setup nahi hai — Transak API key chahiye:\n'
-                    '1. https://dashboard.transak.com par partner account banao\n'
-                    '2. Environment: Staging → Developers → API key lo\n'
-                    '3. lib/config.dart me BuyConfig.transakApiKey me paste karo\n'
-                    'Production key ke liye Transak KYB approve hona chahiye.',
+                    'Buy is not set up yet — a Transak API key is needed:\n'
+                    '1. Create a partner account at https://dashboard.transak.com\n'
+                    '2. Environment: Staging → Developers → get the API key\n'
+                    '3. Paste it in lib/config.dart under BuyConfig.transakApiKey\n'
+                    'Transak KYB must be approved for a production key.',
                     style: TextStyle(fontSize: 13),
                   ),
                 ),
@@ -447,7 +447,7 @@ class _BuyScreenState extends State<BuyScreen> {
             OutlinedButton.icon(
               onPressed: _shareBuyLink,
               icon: const Icon(Icons.share, size: 18),
-              label: const Text('Buy link copy karo'),
+              label: const Text('Copy buy link'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
@@ -459,9 +459,9 @@ class _BuyScreenState extends State<BuyScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Buy karne ke liye Transak par KYC karni padegi (ID / PAN jaisi '
-              'details) — pehli baar. USDT milne ke baad Home par balance '
-              'apne aap badhega. Pehli baar chhota amount se test karo.',
+              'To buy, you will need to complete KYC on Transak (details like ID / PAN) '
+              '— the first time. After you receive USDT, your balance on Home '
+              'will increase automatically. The first time, test with a small amount.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],

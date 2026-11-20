@@ -65,20 +65,20 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
       final ok = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Seed backup save nahi hui'),
+          title: const Text('Seed backup was not saved'),
           content: Text(
             backupStatus == SeedBackupStatus.notConfigured
-                ? 'Seed backup server abhi set nahi hai, isliye backup '
-                    'server par save NAHI hui. Wallet ban gaya hai — '
-                    'apne 12 words kagaz par likh kar safe jagah rakho.'
-                : 'Seed backup upload nahi hui (server/network problem). '
-                    'Wallet ban gaya hai — apne 12 words kagaz par likh '
-                    'kar safe jagah rakho.',
+                ? 'The seed backup server is not set up yet, so the backup '
+                    'was NOT saved on the server. Your wallet has been created — '
+                    'write down your 12 words on paper and keep them in a safe place.'
+                : 'The seed backup could not be uploaded (server/network problem). '
+                    'Your wallet has been created — write down your 12 words on paper '
+                    'and keep them in a safe place.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Samajh gaya'),
+              child: const Text('I understand'),
             ),
           ],
         ),
@@ -98,21 +98,21 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
   Widget build(BuildContext context) {
     final preview = _preview;
     return Scaffold(
-      appBar: AppBar(title: const Text('Naya wallet banao')),
+      appBar: AppBar(title: const Text('Create a new wallet')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Ye 12 words tumhare wallet ki chaabi hain. Inhe kagaz par '
-              'likh lo aur safe jagah rakho. Jo in words ko jaanta hai, wo '
-              'tumhare paise nikaal sakta hai.',
+              'These 12 words are the key to your wallet. Write them down on paper '
+              'and keep them in a safe place. Anyone who knows these words '
+              'can take your money.',
               style: TextStyle(fontSize: 15),
             ),
             const SizedBox(height: 8),
             const Text(
-              'Words ko screenshot me ya kisi ko message me mat bhejo.',
+              'Do not send these words in a screenshot or in a message to anyone.',
               style:
                   TextStyle(fontSize: 14, color: Colors.red, fontWeight: FontWeight.bold),
             ),
@@ -125,7 +125,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
-                child: const Text('12 words banao', style: TextStyle(fontSize: 18)),
+                child: const Text('Generate 12 words', style: TextStyle(fontSize: 18)),
               )
             else ...[
               Wrap(
@@ -152,7 +152,7 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
               CheckboxListTile(
                 value: _wroteDown,
                 onChanged: (v) => setState(() => _wroteDown = v ?? false),
-                title: const Text('Maine 12 words kagaz par likh liye hain.'),
+                title: const Text('I have written down the 12 words on paper.'),
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
               ),
@@ -182,13 +182,13 @@ class _CreateWalletScreenState extends State<CreateWalletScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Save karo aur shuru karo',
+                    : const Text('Save and get started',
                         style: TextStyle(fontSize: 18)),
               ),
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: _generate,
-                child: const Text('Naye words banao'),
+                child: const Text('Generate new words'),
               ),
             ],
           ],
