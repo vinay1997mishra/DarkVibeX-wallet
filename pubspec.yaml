@@ -44,6 +44,15 @@ dependencies:
   # If the phone has no biometrics, the app falls back to the owner PIN.
   local_auth: ^2.3.0
 
+  # Buy USDT (Transak): widget ko phone ke browser me kholna (KYC me
+  # camera chahiye, isliye external browser — in-app webview nahi).
+  url_launcher: ^6.3.3
+
+  # Shareable buy link (darkvibex-wallet://buy) sunna — link tap karne
+  # par app Buy screen par khule. Native intent-filter alag se lagana
+  # hai (README section 7a dekho).
+  app_links: ^7.2.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

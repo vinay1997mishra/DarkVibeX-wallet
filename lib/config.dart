@@ -370,3 +370,66 @@ class BscConfig {
   static const String usdtBep20Contract =
       '0x55d398326f99059fF775485246999027B3197955';
 }
+
+// ---------------------------------------------------------------------------
+// BUY USDT — fiat se USDT kharido (Transak on-ramp, 2026-11-20).
+// ---------------------------------------------------------------------------
+/// USDT Buy (on-ramp) settings — Transak widget se.
+///
+///   - Provider: **Transak** — India ke liye UPI deta hai (MoonPay /
+///     Banxa / Mercuryo ke comparison me sirf Transak ka UPI tha),
+///     aur international: card, Apple Pay, Google Pay, bank transfer.
+///   - Payment methods **country ke hisaab se** dikhte hain (Buy screen
+///     par country chuno): India = UPI + Card + Bank Transfer; USA/UK/
+///     Europe = Card + Apple Pay + Google Pay + Bank Transfer; baaki
+///     countries = Card + Apple Pay + Google Pay.
+///   - KYC: Transak par pehli baar ID/PAN jaisi details se KYC karni
+///     padegi — ye Transak karta hai, app nahi. Bina KYC ke buy nahi hoga.
+///   - Fee + final rate: Transak checkout (widget) me dikhte hain — app
+///     sirf CoinGecko se ESTIMATE dikhata hai, kabhi final rate nahi.
+///   - API KEY: [transakApiKey] khaali (default) ho to Buy button
+///     disabled rehta hai aur screen par setup steps dikhte hain — kabhi
+///     fake buy nahi. Key Transak Partner Dashboard → Developers se
+///     milti hai (staging key pehle, production key KYB ke baad).
+///   - ⚠️ DEPRECATED DIRECT URL: Transak ne hosted widget URL me seedha
+///     query params dalna deprecated kar diya hai — sahi tareeka backend
+///     se Create Widget URL API (api-secret se) hai, jo 5-minute ka
+///     single-use widgetUrl deta hai. Is app me abhi koi server/backend
+///     nahi hai, isliye app seedha widget URL banata hai (staging test
+///     ke liye kaam karta hai). Production me backend session API
+///     banana hoga — tab ye section update hoga. API SECRET kabhi app
+///     me mat dalo — wo sirf server par rehta hai.
+class BuyConfig {
+  /// Transak partner API key (public key — code me rakhna safe hai,
+  /// Transak ke FAQ ke hisaab se apiKey sensitive nahi hai).
+  /// TODO: Transak Partner Dashboard (https://dashboard.transak.com)
+  /// → Environment: Staging → Developers → API key yahan paste karo.
+  /// Production key tabhi dalo jab KYB approve ho gaya ho.
+  /// Khaali = Buy setup nahi hai, button disabled rahega.
+  static const String transakApiKey = '';
+
+  /// 'staging' (default, TEST — asli paise nahi lagte) ya 'production'
+  /// (REAL — asli paise lagenge, KYC + KYB chahiye).
+  /// Staging par Transak ke test card / test PAN se test karo.
+  static const String transakEnvironment = 'staging';
+
+  /// Referrer domain (Transak dashboard me allow-listed domain/app).
+  /// Staging par enforce nahi hota, phir bhi bharna achha hai.
+  /// TODO: apna domain ya app package yahan dalo.
+  static const String transakReferrerDomain = '';
+
+  /// Widget base URL — environment ke hisaab se.
+  static String get transakWidgetBaseUrl =>
+      transakEnvironment == 'production'
+          ? 'https://global.transak.com'
+          : 'https://global-stg.transak.com';
+
+  /// Buy setup hua ya nahi (key + environment).
+  static bool get isConfigured =>
+      transakApiKey.isNotEmpty &&
+      (transakEnvironment == 'staging' ||
+          transakEnvironment == 'production');
+
+  /// Test mode? Staging = test, asli paise nahi lagte.
+  static bool get isTestMode => transakEnvironment != 'production';
+}

@@ -40,6 +40,7 @@ import '../services/wallet_service.dart';
 import '../utils/format.dart';
 import '../widgets/status_chip.dart';
 import 'add_custom_token_screen.dart';
+import 'buy_screen.dart';
 import 'evm_send_screen.dart';
 import 'history_screen.dart';
 import 'owner_login_screen.dart';
@@ -425,6 +426,21 @@ class _HomeScreenState extends State<HomeScreen> {
     if (mounted) await _refreshForChain();
   }
 
+  Future<void> _openBuy() async {
+    final address = _address;
+    final evmAddress = _evmAddress;
+    if (address == null || evmAddress == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BuyScreen(
+          tronAddress: address,
+          evmAddress: evmAddress,
+        ),
+      ),
+    );
+    if (mounted) await _refreshForChain();
+  }
+
   Future<void> _openAddCustomToken() async {
     final address = _address;
     if (address == null) return;
@@ -622,7 +638,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  // ---- Send / Receive / Swap ----
+                  // ---- Send / Receive / Swap / Buy ----
                   Row(
                     children: [
                       Expanded(
@@ -665,6 +681,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           onPressed: _openSwap,
                           icon: const Icon(Icons.swap_horiz),
                           label: const Text('Swap'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _openBuy,
+                          icon: const Icon(Icons.add_shopping_cart),
+                          label: const Text('Buy'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.teal,
                             foregroundColor: Colors.white,

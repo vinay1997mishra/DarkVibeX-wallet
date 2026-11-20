@@ -396,6 +396,73 @@ phir From coin, To coin, amount — **Rate dekho** dabao, phir Confirm.
   se liye gaye — sources me conflict tha, isliye code me ye address
   configurable hai aur verify-first hai).
 
+## 7a. Buy USDT — fiat se USDT kharido (Transak on-ramp)
+
+Home → **Buy** button. Provider: **Transak** — India ke liye UPI deta hai
+(MoonPay / Banxa / Mercuryo se comparison me UPI sirf Transak ka tha),
+aur international: card, Apple Pay, Google Pay, bank transfer.
+
+### Rate — Vinay ka set rate: $1 = ₹110
+- **INR: 1 USDT = ₹110 (fixed).** ₹110 me 1 USDT, ₹1100 me 10 USDT,
+  ₹55 me 0.5 USDT. Ye rate screen par saaf likha hota hai
+  ("₹110 = 1 USDT — Vinay ka set rate ($1 = ₹110)").
+- USD/GBP/EUR par CoinGecko se estimate rate chalta hai (1 USDT ≈ $1 peg).
+- **Final rate + fee Transak checkout (widget) me dikhte hain** — app ka
+  rate estimate hai, Transak ka final hoga. Kabhi fake "buy ho gaya" nahi.
+
+### Payment methods — country ke hisaab se
+Country chunte hi currency + methods badal jate hain:
+
+| Country | Currency | Payment methods |
+|---|---|---|
+| India | INR (₹) | **UPI + Card + Bank Transfer** (dono — UPI bhi, Card bhi) |
+| USA | USD ($) | Card + Apple Pay + Google Pay + Bank Transfer |
+| UK | GBP (£) | Card + Apple Pay + Google Pay + Bank Transfer |
+| Europe | EUR (€) | Card + Apple Pay + Google Pay + Bank Transfer (SEPA) |
+| Other countries | USD ($) | Card + Apple Pay + Google Pay |
+
+### Kaise kaam karta hai
+1. Country → amount → payment method → network (Tron default) chuno →
+   **Rate dekho** → estimate dikhega.
+2. **Transak par kharido** dabao → Transak widget phone ke browser me
+   khulta hai — payment + KYC wahin hota hai (app khud paise nahi leta).
+3. USDT aate hi Home par balance apne aap badhega (30-sec refresh).
+- KYC: Transak par pehli baar ID/PAN jaisi details se KYC karni padegi.
+- **Setup:** Transak Partner Dashboard → Environment: Staging →
+  Developers → API key → `lib/config.dart` me `BuyConfig.transakApiKey`.
+  Key khaali ho to Buy button disabled rehta hai + setup steps dikhte hain.
+  Production key ke liye Transak KYB approve hona chahiye.
+- **Test mode (default):** `transakEnvironment = 'staging'` — asli paise
+  nahi lagte, test card / test details se test karo.
+- **Direct widget URL deprecated:** Transak ka sahi tareeka backend se
+  Create Widget URL API hai (api-secret server-side). Is app me server
+  nahi hai, isliye seedha widget URL banta hai (staging test ke liye).
+  Production me backend session API banana hoga. **API secret kabhi app
+  me mat dalo.**
+
+### Shareable buy link — DarkVibeX app me lagane ke liye
+Buy screen par **"Buy link copy karo"** — link is format me banta hai:
+`darkvibex-wallet://buy?country=IN&fiatCurrency=INR&fiatAmount=1100&network=tron&paymentMethod=upi`
+- Link me sirf buy options hote hain (country, amount, network, method) —
+  **wallet address NAHI hota.** Address hamesha us phone ke wallet se
+  aata hai jis par link khulta hai, taaki USDT hamesha kharidne wale ke
+  apne wallet me jaye.
+- DarkVibeX app me ye link add karo → user tap kare → wallet app Buy
+  screen par khulega, options pre-filled → user direct buy karta rahe.
+- App install na ho to link kuch nahi karega — DarkVibeX side par Play
+  Store link fallback lagana hoga.
+- **Native setup (abhi baaki):** repo me `android/` / `ios/` folder nahi
+  hai (`flutter create .` se banta hai). Uske baad AndroidManifest.xml
+  (MAIN activity) me ye intent-filter add karo:
+  `<intent-filter><action android:name="android.intent.action.VIEW" />`
+  `<category android:name="android.intent.category.DEFAULT" />`
+  `<category android:name="android.intent.category.BROWSABLE" />`
+  `<data android:scheme="darkvibex-wallet" android:host="buy" />`
+  `</intent-filter>` — iOS Info.plist me CFBundleURLSchemes me
+  `darkvibex-wallet` add karo. Tab tak link sirf app ke andar (copy/share
+  + parse) kaam karta hai — Dart-side listener (`main.dart`, `app_links`)
+  pehle se laga hua hai.
+
 ## 8. Naye coins: token list, Add Custom Token, auto-detect
 
 Vinay ka sawaal tha: **market me aane wale naye coins automatic add ho
@@ -450,6 +517,8 @@ lib/
     transaction_model.dart         Transfer + TxStatus (Pending/Confirmed/Failed)
   services/
     wallet_service.dart            12 words, Tron address, local signing
+    buy_service.dart               Buy USDT: Transak on-ramp, per-country methods, ₹110 fixed INR rate, estimate quote, widget URL
+    buy_link.dart                  Shareable buy link: darkvibex-wallet://buy?... build + parse (address kabhi link me nahi)
     seed_backup_service.dart       Seed backup: AES-256 encrypt, logout date, 3-month window, owner recovery check, delete
     recovery_wallet_service.dart   In-app Recovery Wallet (alag keys)
     owner_lock_service.dart        Owner PIN (hash) + biometric lock
@@ -462,6 +531,7 @@ lib/
     owner_login_screen.dart        Hidden owner login (version 7 taps → PIN/biometric)
     owner_accounts_screen.dart     Saare accounts, owner lock ke baad (address/balance/seed)
     home_screen.dart               Balance + recent + auto-refresh
+    buy_screen.dart                Buy USDT: country/method/network, ₹110 rate, estimate, Transak widget, buy link share
     history_screen.dart            Poori history, status ke saath
     recovery_wallet_screen.dart    Owner-only: PIN/biometric, balance, wapas bhejo
     create_wallet_screen.dart      Naya wallet (12 words) + 2-tick agreement (seed backup)
@@ -487,6 +557,8 @@ server/
 | http | ^1.6.0 | TronGrid API calls |
 | pointycastle | ^4.0.0 | secp256k1 signing, Keccak, BIP32 |
 | qr_flutter | ^4.1.0 | Receive QR code |
+| url_launcher | ^6.3.3 | Transak buy widget ko phone ke browser me kholna (KYC me camera chahiye) |
+| app_links | ^7.2.2 | Shareable buy link (darkvibex-wallet://buy) sunna — app link se khule |
 | local_auth | ^2.3.0 | Fingerprint / Face ID (Recovery Wallet + owner lock) |
 | flutter_lints | ^6.0.0 | Code linting |
 
@@ -547,6 +619,17 @@ lata hai. Signing yahan `pointycastle` se khud ki gayi hai.
       karo, phir add karo.
 - [ ] **Swap fee wallet set karo:** `SwapConfig.ownerFeeWalletAddress` me
       apna TRC20 address dalo — tabhi swap fee tumhe milegi.
+- [ ] **Buy test karo (staging):** Transak dashboard se staging API key lo
+      → `BuyConfig.transakApiKey` me dalo → Home → Buy → India, ₹110 likho
+      → "₹110 = 1 USDT" dikhna chahiye → Rate dekho → Transak widget browser
+      me khulna chahiye (test card se test karo, asli paise nahi lagenge).
+- [ ] **Buy link test karo:** Buy screen par "Buy link copy karo" → link
+      `darkvibex-wallet://buy?...` copy ho → link tap karne par Buy screen
+      pre-filled khulni chahiye (native intent-filter lagne ke baad — upar
+      section 7a dekho). DarkVibeX app me ye link lagao.
+- [ ] **Country methods test karo:** India par UPI + Card + Bank Transfer;
+      USA par Card + Apple Pay + Google Pay + Bank Transfer; UPI sirf India
+      me dikhna chahiye.
 - [ ] Testnet par 1 USDT ka test transfer karo, Pending → Confirmed dekho.
 - [ ] **Recovery Wallet test karo (testnet par):** hidden owner login
       se Owner Accounts → Recovery Wallet kholo → 12 words likh lo →

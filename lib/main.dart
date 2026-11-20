@@ -1,12 +1,17 @@
 // USDT Wallet — starter app for Vinay.
 // USDT (TRC20) on Tron. Default network: Nile testnet (see lib/config.dart).
 
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 
+import 'screens/buy_screen.dart';
 import 'screens/create_wallet_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/import_wallet_screen.dart';
 import 'screens/owner_login_screen.dart';
+import 'services/buy_link.dart';
 import 'services/wallet_service.dart';
 import 'widgets/secret_owner_tap.dart';
 
@@ -17,11 +22,15 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  // Navigator key — WalletGate buy link se BuyScreen khol sake.
+  static final navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'USDT Wallet',
       debugShowCheckedModeBanner: false,
+      navigatorKey: navigatorKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF26A17B), // Tether green
@@ -44,12 +53,75 @@ class WalletGate extends StatefulWidget {
 
 class _WalletGateState extends State<WalletGate> {
   final _walletService = WalletService();
+  final _appLinks = AppLinks();
+  StreamSubscription<Uri>? _linkSubscription;
   bool? _hasWallet;
+
+  /// Buy link se aaye options — wallet banne se pehle link aaye to
+  /// yahan save rehta hai, wallet ready hote hi Buy screen khulti hai.
+  BuyLinkParams? _pendingBuyParams;
 
   @override
   void initState() {
     super.initState();
     _checkWallet();
+    _listenBuyLinks();
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  /// Shareable buy link suno: darkvibex-wallet://buy?country=IN&...
+  /// (app khula ho ya link se khula ho — dono). Native intent-filter
+  /// (AndroidManifest / Info.plist) lagne ke baad hi link app tak
+  /// pahunchega — README me snippet hai.
+  Future<void> _listenBuyLinks() async {
+    try {
+      final initial = await _appLinks.getInitialLink();
+      if (initial != null) _handleBuyLink(initial);
+    } catch (_) {
+      // Deep link support na ho to app normal khulta hai.
+    }
+    _linkSubscription = _appLinks.uriLinkStream.listen(
+      _handleBuyLink,
+      onError: (_) {},
+    );
+  }
+
+  void _handleBuyLink(Uri uri) {
+    final params = BuyLink.parse(uri);
+    if (params == null) return;
+    if (_hasWallet == true) {
+      _openBuy(params);
+    } else {
+      // Wallet abhi nahi hai — pehle wallet banao/import karo, phir
+      // Buy screen khud khul jayegi.
+      _pendingBuyParams = params;
+    }
+  }
+
+  Future<void> _openBuy(BuyLinkParams params) async {
+    final tronAddress = await _walletService.getAddress();
+    final evmAddress = await _walletService.getEthereumAddress();
+    final navigator = MyApp.navigatorKey.currentState;
+    if (tronAddress == null ||
+        tronAddress.isEmpty ||
+        evmAddress.isEmpty ||
+        navigator == null) {
+      return;
+    }
+    navigator.push(
+      MaterialPageRoute(
+        builder: (_) => BuyScreen(
+          tronAddress: tronAddress,
+          evmAddress: evmAddress,
+          initialParams: params,
+        ),
+      ),
+    );
   }
 
   Future<void> _checkWallet() async {
@@ -58,6 +130,12 @@ class _WalletGateState extends State<WalletGate> {
     setState(() {
       _hasWallet = hasWallet;
     });
+    // Wallet ready + buy link pending ho to Buy screen kholo.
+    final pending = _pendingBuyParams;
+    if (hasWallet && pending != null) {
+      _pendingBuyParams = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) => _openBuy(pending));
+    }
   }
 
   @override
