@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -43,4 +45,12 @@ jobs:
           name: usdt-wallet-app-release
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
+
+      - name: Upload APK to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: wallet-latest
+          name: USDT Wallet Latest
+          files: build/app/outputs/flutter-apk/app-release.apk
+          fail_on_unmatched_files: true
           
